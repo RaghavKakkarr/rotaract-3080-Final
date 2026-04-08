@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
+import './globals.css'; 
+// 👇 Navbar aur Footer dono import karne hain
+import Navbar from '@/components/Navbar'; // (Path check kar lena agar Navbar folder alag hai)
+import Footer from '@/components/Footer'; 
 
-// Hum website ke font ko Inter kar rahe hain jo bahut clean lagta hai
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Rotaract District 3080",
-  description: "Official Portal for Rotaract District 3080 - Unite for Good",
+export const metadata = {
+  title: 'Rotaract District 3080',
+  description: 'Official Portal of Rotaract District 3080',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-neutral-950 text-white`}>
-        {/* Yahan humne apna Navbar laga diya */}
-        <Navbar />
+      <body className="flex flex-col min-h-screen bg-black text-white">
         
-        {/* Yeh children wo pages hain jo badalte rahenge (Home, Clubs, etc.) */}
-        {children}
+        {/* 👇 Navbar Wapas Aagaya! */}
+        <Navbar />
+
+        {/* Main Content */}
+        <main className="flex-grow">
+          {children}
+        </main>
+        
+        {/* Footer */}
+        <Footer />
+        
       </body>
     </html>
   );

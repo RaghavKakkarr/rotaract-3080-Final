@@ -23,8 +23,8 @@ function MemberCard({ name, role }: MemberProps) {
 
 export default function CouncilPage() {
   const councilMembers = [
-    { name: "Rtr. Raghav Kakkar", role: "District Rotaract Representative" },
-    { name: "Rtr. Name Surname", role: "District General Secretary" },
+    { name: "Rtr. Dr. Manu Gupta", role: "District Rotaract Representative" },
+    { name: "Rtr. Sarthak P Perti", role: "District General Secretary" },
     { name: "Rtr. Name Surname", role: "District Treasurer" },
     { name: "Rtr. Name Surname", role: "District Joint Secretary" },
     { name: "Rtr. Name Surname", role: "Zonal Rotaract Representative" },

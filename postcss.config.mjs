@@ -1,6 +1,7 @@
 const config = {
   plugins: {
-    "@tailwindcss/postcss": {},
+    '@tailwindcss/postcss': {}, // Naya package yahan use hoga
+    'autoprefixer': {},
   },
 };
 

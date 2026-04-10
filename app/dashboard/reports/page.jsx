@@ -92,11 +92,11 @@ export default function IndividualReporting() {
   return (
     <main className="min-h-screen bg-neutral-950 text-white pt-28 px-6 pb-20 font-sans">
       <div className="max-w-5xl mx-auto">
-        
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-rose-500 font-bold mb-8 transition-all hover:-translate-x-1">
-          <ArrowLeft size={20} /> Back to Dashboard
-        </Link>
-
+        <div className="relative z-[999]"> {/* Isse button sabse upar aa jayega */}
+          <Link href="/dashboard" className="text-rose-500 font-bold flex items-center gap-2 mb-8 hover:text-white transition-all">
+            <ArrowLeft size={20} /> Back to Dashboard
+          </Link>
+        </div>
         {clubInfo ? (
           <>
             <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2">

@@ -7,7 +7,7 @@ export default function Footer() {
         
         {/* District Copyright */}
         <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em]">
-          © 2025-26 Rotaract District 3080
+          © 2026-27 Rotaract District 3080
         </p>
 
         {/* Minimalist Developer Credit */}

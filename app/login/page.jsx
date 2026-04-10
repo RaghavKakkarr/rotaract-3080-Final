@@ -1,10 +1,7 @@
 'use client';
-
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
-import { LogIn, Mail, Lock, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
@@ -17,58 +14,64 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
+    else router.push('/dashboard');
+    setLoading(false);
+  };
 
-    if (error) {
-      alert(error.message);
-      setLoading(false);
-    } else {
-      // 🎯 ADMIN CHECK LOGIC
-      // Yahan apna admin email dalo
-      const adminEmail = "aapka-asli-email@gmail.com"; 
-
-      if (data.user.email === adminEmail) {
-        router.push('/admin'); // Admin ko yahan bhejo
-      } else {
-        router.push('/dashboard'); // Baki sabko yahan bhejo
-      }
+  // 👇 Ye naya function hai Reset Email bhejnewale ke liye
+  const handleForgotPassword = async () => {
+    if (!email) {
+      alert("Pehle apni Email ID likho bhai!");
+      return;
     }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    if (error) alert(error.message);
+    else alert("Reset link aapki email par bhej diya gaya hai! Check karo.");
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-white flex items-center justify-center px-6">
-      <div className="w-full max-w-md bg-white/[0.02] border border-white/10 p-8 rounded-[2.5rem] shadow-2xl">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <LogIn size={32} />
-          </div>
-          <h1 className="text-3xl font-black italic">CLUB <span className="text-rose-500">LOGIN</span></h1>
-          <p className="text-neutral-500 text-sm mt-2 font-medium uppercase tracking-widest">District 3080 Portal</p>
-        </div>
-
+    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 uppercase">
+      <div className="max-w-md w-full bg-white/[0.02] border border-white/10 p-10 rounded-[3rem]">
+        <h1 className="text-4xl font-black italic tracking-tighter mb-8">Login <span className="text-rose-500">Portal</span></h1>
+        
         <form onSubmit={handleLogin} className="space-y-4">
-          <div className="relative">
-            <Mail className="absolute left-4 top-4 text-neutral-500" size={20} />
-            <input type="email" placeholder="Club or Admin Email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-rose-500 transition-all" />
-          </div>
+          <input
+            required
+            type="email"
+            placeholder="Email Address"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-rose-500 transition-all"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            required
+            type="password"
+            placeholder="Password"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-rose-500 transition-all"
+            onChange={(e) => setPassword(e.target.value)}
+          />
           
-          <div className="relative">
-            <Lock className="absolute left-4 top-4 text-neutral-500" size={20} />
-            <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-rose-500 transition-all" />
+          {/* 👇 Forgot Password Link */}
+          <div className="text-right">
+            <button 
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-[10px] font-black text-neutral-500 hover:text-rose-500 transition-colors tracking-widest"
+            >
+              Forgot Password?
+            </button>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20">
-            {loading ? <Loader2 className="animate-spin" /> : 'ENTER PORTAL'}
+          <button 
+            disabled={loading}
+            className="w-full bg-rose-600 font-black py-4 rounded-2xl tracking-[0.2em] hover:bg-rose-500 transition-all disabled:opacity-50"
+          >
+            {loading ? "Authenticating..." : "Enter Dashboard"}
           </button>
         </form>
-
-        <p className="text-center text-neutral-500 text-sm mt-8 font-medium">
-          Issues logging in? <Link href="/" className="text-rose-500 hover:underline">Contact District IT</Link>
-        </p>
       </div>
     </main>
   );

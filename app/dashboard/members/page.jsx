@@ -90,9 +90,11 @@ export default function ManageMembers() {
   return (
     <main className="min-h-screen bg-neutral-950 text-white pt-28 px-6 pb-20">
       <div className="max-w-6xl mx-auto">
-        <Link href="/dashboard" className="text-rose-500 font-bold flex items-center gap-2 mb-8 hover:text-white transition-all">
-          <ArrowLeft size={20} /> Back to Dashboard
-        </Link>
+        <div className="relative z-[999]"> {/* Isse button sabse upar aa jayega */}
+          <Link href="/dashboard" className="text-rose-500 font-bold flex items-center gap-2 mb-8 hover:text-white transition-all">
+            <ArrowLeft size={20} /> Back to Dashboard
+          </Link>
+        </div>
 
         {clubInfo ? (
           <>

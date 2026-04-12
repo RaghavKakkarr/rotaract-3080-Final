@@ -1,100 +1,164 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, Mail, MapPin, Globe, MessageSquare, Loader2 } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+import { Send, Mail, Globe, MessageSquare, Loader2 } from 'lucide-react';
+
+// Supabase Initialization
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    role: '',
+    message: ''
+  });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simple simulation for now
-    setTimeout(() => {
-      setLoading(false);
+    setStatus('');
+
+    try {
+      const { error } = await supabase.from('contact_messages').insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.role,
+          message: formData.message,
+          created_at: new Date()
+        }
+      ]);
+
+      if (error) throw error;
+
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: "16a6d627-af6b-41a6-918b-760df2148d08", 
+          subject: `New Portal Alert from: ${formData.name}`,
+          name: formData.name,
+          email: formData.email,
+          "Club/Role": formData.role,
+          message: formData.message,
+        })
+      });
+      
       setStatus('Message sent successfully! 🚀');
-      e.target.reset();
-    }, 2000);
+      setFormData({ name: '', email: '', role: '', message: '' }); 
+      setTimeout(() => setStatus(''), 4000);
+    } catch (error) {
+      setStatus('Failed to send: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-white pt-32 pb-20 px-6 font-sans">
-      <div className="max-w-7xl mx-auto">
+    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-32 pb-20 px-6 font-sans transition-colors duration-300">
+      
+      {/* 🎯 Container matched to max-w-6xl */}
+      <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* HEADER */}
-        <header className="mb-20 text-center md:text-left">
-          <p className="text-rose-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4 italic tracking-widest">• talk to the district</p>
-          <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-8 leading-none italic">Contact <span className="text-rose-500 text-not-italic font-sans">3080</span></h1>
-          <p className="text-neutral-500 max-w-2xl font-medium italic">"Keep the contact page clean, useful, and easy to act on. Structured so clubs and visitors can quickly find the right path for district communication."</p>
+        {/* HERO SECTION (About Page Style) */}
+        <header className="mb-24">
+          <p className="text-rose-600 dark:text-rose-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4 italic tracking-widest">• talk to the district</p>
+          <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-8 leading-none">
+            Contact <span className="text-rose-600 dark:text-rose-500 text-not-italic font-sans">3080</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-400 max-w-3xl leading-relaxed font-medium italic">
+            "Keep communication clean, useful, and easy to act on. Structured so clubs and visitors can quickly find the right path."
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* CONTACT FORM */}
-          <div className="bg-white/[0.03] border border-white/10 p-10 md:p-16 rounded-[4rem] shadow-2xl">
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-8 flex items-center gap-3">
-              <MessageSquare className="text-rose-500" /> Send a <span className="text-rose-500">Message</span>
+          {/* CONTACT FORM (About Page Card Style) */}
+          <div className="lg:col-span-7 bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-10 md:p-12 rounded-[3.5rem] shadow-sm dark:shadow-none transition-all">
+            <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-8 flex items-center gap-3 text-neutral-900 dark:text-white">
+              <MessageSquare className="text-rose-600 dark:text-rose-500" size={24} /> Send a <span className="text-rose-600 dark:text-rose-500 text-not-italic">Message</span>
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Full Name</label>
-                  <input type="text" required placeholder="Your Name" className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all" />
+                  <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest italic">Full Name</label>
+                  <input 
+                    type="text" required placeholder="Your Name" value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full bg-neutral-100 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700 shadow-inner" 
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Email Address</label>
-                  <input type="email" required placeholder="yourname@email.com" className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all" />
+                  <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest italic">Email Address</label>
+                  <input 
+                    type="email" required placeholder="name@email.com" value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full bg-neutral-100 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700 shadow-inner" 
+                  />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Club / District Role</label>
-                <input type="text" placeholder="e.g. RAC Chandigarh / Visitor" className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all" />
+                <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest italic">Club / District Role</label>
+                <input 
+                  type="text" placeholder="e.g. RAC Chandigarh / Visitor" required value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
+                  className="w-full bg-neutral-100 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none transition-all text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700 shadow-inner" 
+                />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Message</label>
-                <textarea rows="5" required placeholder="How can the district help you?" className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none resize-none transition-all"></textarea>
+                <label className="text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest italic">Message</label>
+                <textarea 
+                  rows="4" required placeholder="How can the district help you?" value={formData.message}
+                  onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  className="w-full bg-neutral-100 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 outline-none resize-none transition-all text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700 shadow-inner"
+                ></textarea>
               </div>
 
               <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full bg-white text-black font-black py-5 rounded-2xl hover:bg-rose-500 hover:text-white transition-all uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-3 shadow-xl"
+                type="submit" disabled={loading}
+                className="w-full bg-neutral-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white transition-all uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3 shadow-lg disabled:opacity-50"
               >
-                {loading ? <Loader2 className="animate-spin" size={20} /> : <><Send size={18} /> Send Message</>}
+                {loading ? <Loader2 className="animate-spin" size={16} /> : <><Send size={16} /> Send Message</>}
               </button>
 
               {status && (
-                <p className="text-green-400 text-[10px] font-black uppercase tracking-widest text-center animate-bounce">{status}</p>
+                <p className={`text-[10px] font-black uppercase tracking-widest text-center mt-4 ${status.includes('Failed') ? 'text-red-600' : 'text-green-600 animate-pulse'}`}>
+                  {status}
+                </p>
               )}
             </form>
           </div>
 
-          {/* OFFICIAL INFO BLOCKS */}
-          <div className="space-y-8">
-            <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] group hover:border-blue-500/30 transition-all">
-              <Mail className="text-blue-500 mb-6" size={32} />
-              <h3 className="text-xl font-black uppercase italic tracking-tighter mb-2 italic tracking-widest italic tracking-widest italic tracking-widest tracking-widest tracking-widest">Official Info</h3>
-              <p className="text-neutral-500 text-sm leading-relaxed font-sans mb-6 italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">"District portal, clubs, council, and service information."</p>
-              <div className="space-y-2 font-sans italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">
-                <p className="text-sm font-bold tracking-tight">drr@rotaract3080.org</p>
-                <p className="text-sm font-bold tracking-tight text-neutral-400 uppercase tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest text-[10px] tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest tracking-widest tracking-widest">RID 3080 • India</p>
-              </div>
+          {/* OFFICIAL INFO BLOCKS (About Page Stats Style) */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-10 rounded-[3rem] group hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-all shadow-sm dark:shadow-none">
+              <Mail className="text-rose-600 dark:text-rose-500 mb-6" size={32} />
+              <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest mb-2 italic">Official Mail</p>
+              <h3 className="text-2xl font-black italic text-neutral-900 dark:text-white mb-2">drr@rotaract3080.org</h3>
+              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">RID 3080 • India</p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] group hover:border-amber-500/30 transition-all">
-              <Globe className="text-amber-500 mb-6" size={32} />
-              <h3 className="text-xl font-black uppercase italic tracking-tighter mb-2 italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">Rotary International</h3>
-              <p className="text-neutral-500 text-sm leading-relaxed font-sans mb-6 italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">"Global mission, causes, and foundation-led service."</p>
-              <a href="https://www.rotary.org" target="_blank" className="text-[10px] font-black uppercase text-amber-500 tracking-widest hover:underline italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">Visit rotary.org →</a>
+            <div className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-10 rounded-[3rem] group hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-all shadow-sm dark:shadow-none">
+              <Globe className="text-rose-600 dark:text-rose-500 mb-6" size={32} />
+              <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest mb-2 italic">Global Mission</p>
+              <h3 className="text-2xl font-black italic text-neutral-900 dark:text-white mb-4">Rotary International</h3>
+              <a href="https://www.rotary.org" target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase text-rose-600 dark:text-rose-500 tracking-[0.2em] hover:underline">Visit rotary.org →</a>
             </div>
 
-            <div className="p-10 border border-dashed border-white/10 rounded-[3rem] text-center">
-              <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.4em] mb-4 italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">Collaboration</p>
-              <p className="text-neutral-400 text-xs italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest italic tracking-widest">"Use this page to connect clubs, leaders, and visitors quickly."</p>
+            <div className="p-10 border border-dashed border-neutral-300 dark:border-white/10 rounded-[3rem] text-center">
+              <p className="text-neutral-400 dark:text-neutral-600 text-[10px] font-black uppercase tracking-[0.4em] italic leading-relaxed">
+                "Connecting clubs, leaders, and visitors through a singular district movement."
+              </p>
             </div>
           </div>
 

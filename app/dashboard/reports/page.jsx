@@ -25,7 +25,6 @@ export default function IndividualReporting() {
   useEffect(() => {
     const today = new Date();
     if (today.getDate() >= 25) setIsNominationOpen(true);
-
     fetchClubAndMembers();
   }, []);
 
@@ -46,7 +45,6 @@ export default function IndividualReporting() {
 
     if (clubData) {
       setClubInfo(clubData);
-      
       const { data: membersData } = await supabase
         .from('members')
         .select('*')
@@ -84,109 +82,112 @@ export default function IndividualReporting() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center text-rose-600 dark:text-rose-500 font-black italic animate-pulse uppercase tracking-widest">Verifying Roster...</div>;
+  if (loading) return <div className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center text-rose-600 dark:text-rose-500 font-black italic animate-pulse uppercase tracking-widest px-6 text-center text-sm">Verifying Roster...</div>;
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-28 px-6 pb-20 font-sans transition-colors duration-300">
+    // 👇 FIX: pt-20 for mobile, pt-10 for desktop (Dashboard Standard)
+    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-20 md:pt-10 px-4 md:px-6 pb-20 font-sans transition-colors duration-300 overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
-        <div className="relative z-[99]">
-          <Link href="/dashboard" className="text-rose-600 dark:text-rose-500 font-bold flex items-center gap-2 mb-8 hover:text-black dark:hover:text-white transition-all uppercase tracking-widest text-[10px]">
-            <ArrowLeft size={16} /> Back to Dashboard
-          </Link>
-        </div>
-        {clubInfo ? (
-          <>
-            <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-2 text-neutral-900 dark:text-white">
-              Impact <span className="text-rose-600 dark:text-rose-500 text-not-italic">Tracking</span>
-            </h1>
-            <p className="text-neutral-500 text-[10px] font-black uppercase tracking-[0.3em] mb-10 italic">
-              {clubInfo.name} | Official Service Log
-            </p>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-              
-              {/* LEFT: INDIVIDUAL HOURS LOG */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-xl dark:shadow-2xl">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                      <Clock size={20} /> Member Service Hours
-                    </h2>
-                    <span className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-black uppercase tracking-widest italic border border-blue-200 dark:border-blue-500/20">Mandatory Update</span>
-                  </div>
-                  
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {members.length === 0 ? (
-                      <p className="text-neutral-500 text-sm italic py-10 text-center">No members found in your roster. Please add members first.</p>
-                    ) : (
-                      members.map((member) => (
-                        <div key={member.id} className="bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/5 p-4 rounded-2xl flex items-center justify-between group hover:border-blue-400 dark:hover:border-blue-500/30 transition-all shadow-sm dark:shadow-none">
-                          <div>
-                            <p className="font-bold text-sm tracking-tight text-neutral-900 dark:text-white">{member.name}</p>
-                            <p className="text-[10px] text-neutral-500 font-black uppercase tracking-tighter">{member.district_id}</p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <input 
-                              type="number" 
-                              defaultValue={member.volunteer_hours}
-                              onBlur={(e) => handleHourUpdate(member.id, e.target.value)}
-                              className="w-20 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-white/10 rounded-lg px-2 py-2 text-center text-sm font-bold focus:border-blue-500 outline-none transition-all text-blue-600 dark:text-blue-400 shadow-inner dark:shadow-none"
-                              placeholder="0"
-                            />
-                            <span className="text-[10px] font-black text-neutral-400 uppercase">Hrs</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT: ROM NOMINATION */}
-              <div className="space-y-6">
-                <div className={`bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-xl dark:shadow-2xl transition-all ${!isNominationOpen ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                  <h2 className="text-xl font-bold flex items-center gap-2 text-amber-600 dark:text-amber-500 mb-6 uppercase italic tracking-tighter">
-                    <Award size={20} /> Nominate ROM
-                  </h2>
-                  {!isNominationOpen && (
-                    <div className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 p-4 rounded-xl text-[10px] font-black uppercase mb-6 flex items-start gap-2 border border-amber-200 dark:border-amber-500/20 shadow-sm">
-                      <Lock size={16} className="shrink-0" />
-                      Window Opens: 25th of {nominationData.month}
-                    </div>
-                  )}
-                  <form onSubmit={handleNominationSubmit} className="space-y-4">
-                    <select 
-                      required 
-                      value={nominationData.rotaractor_name}
-                      onChange={e => setNominationData({...nominationData, rotaractor_name: e.target.value})}
-                      className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-amber-500 text-neutral-900 dark:text-white appearance-none"
-                    >
-                      <option value="" className="bg-white dark:bg-neutral-900">Select Nominee</option>
-                      {members.map(m => <option key={m.id} value={m.name} className="bg-white dark:bg-neutral-900">{m.name}</option>)}
-                    </select>
-                    <textarea 
-                      required 
-                      rows="4"
-                      placeholder="Citation for nomination..."
-                      value={nominationData.achievements}
-                      onChange={e => setNominationData({...nominationData, achievements: e.target.value})}
-                      className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500 resize-none text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700"
-                    ></textarea>
-                    <button className="w-full bg-amber-600 hover:bg-amber-500 text-white dark:text-black font-black py-4 rounded-xl text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg">Submit Nomination</button>
-                  </form>
-                  {status && <p className="text-green-600 dark:text-green-400 text-[10px] mt-4 font-black uppercase text-center animate-bounce">{status}</p>}
-                </div>
-              </div>
-
+        
+        {/* UNIFIED HEADER - Responsive Padding */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm">
+          <div className="flex items-center gap-3 md:gap-4">
+            <Link href="/dashboard" className="flex items-center gap-2 text-neutral-500 hover:text-amber-600 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-neutral-100 dark:bg-white/5 px-3 py-2 md:px-4 md:py-3 rounded-xl">
+              <ArrowLeft size={14} md={16} /> Back
+            </Link>
+            <div>
+              <h1 className="text-lg md:text-2xl font-black italic uppercase tracking-tighter leading-none">
+                Impact <span className="text-amber-600 dark:text-amber-500 text-not-italic">Tracking</span>
+              </h1>
+              <p className="text-neutral-500 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] mt-1 line-clamp-1">
+                {clubInfo?.name || "Official Service Log"}
+              </p>
             </div>
-          </>
+          </div>
+        </div>
+
+        {clubInfo ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
+            
+            {/* LEFT: INDIVIDUAL HOURS LOG - Main focus on Mobile */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                  <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <Clock size={20} /> Member Service
+                  </h2>
+                  <span className="text-[8px] md:text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-widest italic w-fit">Update Monthly</span>
+                </div>
+                
+                <div className="space-y-3 max-h-[500px] md:max-h-[600px] overflow-y-auto pr-1 md:pr-2 custom-scrollbar">
+                  {members.length === 0 ? (
+                    <p className="text-neutral-500 text-sm italic py-10 text-center">Roster empty. Please add members.</p>
+                  ) : (
+                    members.map((member) => (
+                      <div key={member.id} className="bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/5 p-4 rounded-xl flex items-center justify-between gap-4 group">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-sm tracking-tight truncate">{member.name}</p>
+                          <p className="text-[9px] text-neutral-500 font-black uppercase truncate">{member.district_id}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="number" 
+                            defaultValue={member.volunteer_hours}
+                            onBlur={(e) => handleHourUpdate(member.id, e.target.value)}
+                            className="w-16 md:w-20 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-white/10 rounded-lg px-2 py-2 text-center text-sm font-bold focus:border-blue-500 outline-none text-blue-600"
+                            placeholder="0"
+                          />
+                          <span className="text-[9px] font-black text-neutral-400 uppercase">Hrs</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: ROM NOMINATION */}
+            <div className="space-y-6">
+              <div className={`bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all ${!isNominationOpen ? 'opacity-50 grayscale' : ''}`}>
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 text-amber-600 mb-6 uppercase italic tracking-tighter leading-tight">
+                  <Award size={20} /> Nominate ROM
+                </h2>
+                {!isNominationOpen && (
+                  <div className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 p-4 rounded-xl text-[9px] font-black uppercase mb-6 flex items-start gap-2 border border-amber-200">
+                    <Lock size={14} className="shrink-0" />
+                    Window: 25th - EOM
+                  </div>
+                )}
+                <form onSubmit={handleNominationSubmit} className="space-y-4">
+                  <select 
+                    required 
+                    value={nominationData.rotaractor_name}
+                    onChange={e => setNominationData({...nominationData, rotaractor_name: e.target.value})}
+                    className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-amber-500 text-neutral-900 dark:text-white"
+                  >
+                    <option value="">Select Nominee</option>
+                    {members.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                  </select>
+                  <textarea 
+                    required 
+                    rows="3"
+                    placeholder="Citation..."
+                    value={nominationData.achievements}
+                    onChange={e => setNominationData({...nominationData, achievements: e.target.value})}
+                    className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500 resize-none"
+                  ></textarea>
+                  <button className="w-full bg-amber-600 text-white dark:text-black font-black py-4 rounded-xl text-[9px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all">Submit</button>
+                </form>
+                {status && <p className="text-green-600 text-[9px] mt-4 font-black uppercase text-center animate-pulse">{status}</p>}
+              </div>
+            </div>
+
+          </div>
         ) : (
-          <div className="bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20 p-12 rounded-[3rem] text-center shadow-lg transition-all">
-             <ShieldAlert className="mx-auto text-red-600 dark:text-red-500 mb-6" size={60} />
-             <h2 className="text-red-600 dark:text-red-500 font-black text-2xl mb-3 italic uppercase">Access Restricted</h2>
-             <p className="text-neutral-500 text-sm italic max-w-sm mx-auto">
-               Your account is not linked to an official club roster. Hours cannot be logged.
-             </p>
+          <div className="bg-red-50 dark:bg-red-500/5 border border-red-200 p-10 rounded-[2rem] text-center">
+             <ShieldAlert className="mx-auto text-red-600 mb-4" size={48} />
+             <h2 className="text-red-600 font-black text-xl mb-2 uppercase">Access Restricted</h2>
+             <p className="text-neutral-500 text-xs italic">Account not linked to a club roster.</p>
           </div>
         )}
       </div>

@@ -5,9 +5,13 @@ import { createClient } from '@supabase/supabase-js';
 import { Calendar, Loader2, Image as ImageIcon, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// 🛑 THE FIX: Adding fallback empty strings to prevent 'undefined' warnings
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function FeaturedEvents() {
+  // 🛑 THE FIX: Initializing with an empty array of 'any' or just empty is fine in .jsx
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,12 +26,13 @@ export default function FeaturedEvents() {
         .from('events')
         .select('*')
         .eq('is_approved', true) 
-        .order('date', { ascending: false }); // 👈 Date column check kar lena Supabase mein
+        .order('date', { ascending: false });
 
       if (error) throw error;
       setEvents(data || []);
     } catch (err) {
-      console.error("Error:", err.message);
+      // 🛑 THE FIX: Accessing error safely
+      console.error("Error fetching events:", err instanceof Error ? err.message : err);
     } finally {
       setLoading(false);
     }
@@ -36,10 +41,9 @@ export default function FeaturedEvents() {
   return (
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-32 pb-20 px-6 font-sans transition-colors duration-300">
       
-      {/* 🎯 Container matched to max-w-6xl for consistency */}
       <div className="max-w-6xl mx-auto">
         
-        {/* HERO SECTION (About Page Style) */}
+        {/* HERO SECTION */}
         <header className="mb-24">
           <p className="text-rose-600 dark:text-rose-500 font-black uppercase tracking-[0.3em] text-[10px] mb-4 italic tracking-widest">• district showcase</p>
           <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-8 leading-none">
@@ -61,7 +65,6 @@ export default function FeaturedEvents() {
             <p className="text-neutral-400 font-black uppercase italic tracking-widest text-[10px]">No approved events found in the public gallery.</p>
           </div>
         ) : (
-          /* EVENT GRID (Consistent with Clubs/Service Gaps) */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((ev) => (
               <div key={ev.id} className="group bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 rounded-[3.5rem] overflow-hidden hover:border-rose-400 dark:hover:border-rose-500/50 transition-all duration-700 shadow-sm dark:shadow-none">
@@ -73,7 +76,7 @@ export default function FeaturedEvents() {
                     alt={ev.title} 
                     className="object-cover w-full h-full grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" 
                   />
-                  <div className="absolute top-6 left-6 relative z-10">
+                  <div className="absolute top-6 left-6 z-10">
                     <span className="bg-neutral-900 dark:bg-rose-600 text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-2xl border border-white/10">
                       {ev.club_name}
                     </span>
@@ -105,7 +108,7 @@ export default function FeaturedEvents() {
           </div>
         )}
 
-        {/* LOWER CALLOUT (Journey Card Style) */}
+        {/* LOWER CALLOUT */}
         <section className="mt-32 bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-12 md:p-20 rounded-[4rem] text-center">
             <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-neutral-900 dark:text-white">Want your project <span className="text-rose-600">Featured?</span></h2>
             <p className="text-neutral-500 text-sm italic mb-12 max-w-xl mx-auto">Upload your club activities through the portal and get them verified by the district council.</p>

@@ -60,9 +60,11 @@ export default function ManageMembers() {
     if (!clubInfo) return;
 
     const districtId = `RID3080-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const finalRiId = newMember.ri_id.trim() === '' ? null : newMember.ri_id;
     
     const { error } = await supabase.from('members').insert([{
       ...newMember,
+      ri_id: finalRiId,
       club_name: clubInfo.name,
       district_id: districtId,
       volunteer_hours: 0
@@ -86,57 +88,61 @@ export default function ManageMembers() {
   if (loading) return <div className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center text-rose-600 dark:text-rose-500 font-black animate-pulse uppercase tracking-widest">Loading Roster...</div>;
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-28 px-6 pb-20 transition-colors duration-300">
+    // 👇 SPACE FIX: pt-4 for mobile (tight), md:pt-10 for desktop
+    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-4 md:pt-10 px-4 md:px-6 pb-20 transition-colors duration-300 overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
-        <div className="relative z-[99]">
-          <Link href="/dashboard" className="text-rose-600 dark:text-rose-500 font-bold flex items-center gap-2 mb-8 hover:text-black dark:hover:text-white transition-all uppercase tracking-widest text-[10px]">
-            <ArrowLeft size={16} /> Back to Dashboard
-          </Link>
+        
+        {/* 🚀 UNIFIED HEADER - Reduced Margin mb-6 */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-10 bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm">
+          <div className="flex items-center gap-3 md:gap-4">
+            <Link href="/dashboard" className="flex items-center gap-2 text-neutral-500 hover:text-blue-600 dark:hover:text-blue-500 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-neutral-100 dark:bg-white/5 px-3 py-2 md:px-4 md:py-3 rounded-xl border border-transparent hover:border-blue-200 dark:hover:border-blue-500/20">
+              <ArrowLeft size={14} md={16} /> Back
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-lg md:text-2xl font-black italic uppercase tracking-tighter text-neutral-900 dark:text-white leading-none truncate">
+                {clubInfo?.name || "Manage"} <span className="text-blue-600 dark:text-blue-500 text-not-italic">Registry</span>
+              </h1>
+              <p className="text-neutral-500 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] mt-1">
+                District 3080 • Zone {clubInfo?.zone}
+              </p>
+            </div>
+          </div>
         </div>
 
         {clubInfo ? (
           <>
-            <div className="mb-10">
-              <h1 className="text-4xl font-black italic uppercase tracking-tighter text-neutral-900 dark:text-white">
-                {clubInfo.name} <span className="text-rose-600 dark:text-rose-500">Member Registry</span>
-              </h1>
-              <p className="text-neutral-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">
-                District 3080 • Zone {clubInfo.zone}
-              </p>
-            </div>
-
             {/* 🎯 DETAILED REGISTRATION FORM */}
-            <form onSubmit={handleAddMember} className="bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 p-8 rounded-[2.5rem] mb-12 shadow-xl dark:shadow-2xl transition-all">
-              <h3 className="text-sm font-black uppercase tracking-widest text-rose-600 dark:text-rose-500 mb-6 flex items-center gap-2">
+            <form onSubmit={handleAddMember} className="bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] mb-8 md:mb-12 shadow-xl transition-all">
+              <h3 className="text-xs font-black uppercase tracking-widest text-rose-600 dark:text-rose-500 mb-6 flex items-center gap-2">
                 <UserPlus size={18}/> New Enrollment
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Full Name</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-8">
+                <div className="space-y-1.5 md:space-y-2">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Full Name</label>
                   <input type="text" placeholder="Member Name" required value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:border-rose-500 outline-none text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Designation</label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Designation</label>
                   <input type="text" placeholder="e.g. Vice President" required value={newMember.designation} onChange={e => setNewMember({...newMember, designation: e.target.value})} className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:border-rose-500 outline-none text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">RI ID (If any)</label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">RI ID (If any)</label>
                   <input type="text" placeholder="Rotary International ID" value={newMember.ri_id} onChange={e => setNewMember({...newMember, ri_id: e.target.value})} className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:border-rose-500 outline-none text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Phone Number</label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Phone Number</label>
                   <input type="tel" placeholder="+91 XXXXX XXXXX" required value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:border-rose-500 outline-none text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-700" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Blood Group</label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 ml-1">Blood Group</label>
                   <select required value={newMember.blood_group} onChange={e => setNewMember({...newMember, blood_group: e.target.value})} className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:border-rose-500 outline-none appearance-none text-neutral-900 dark:text-white">
                     <option value="" className="bg-white dark:bg-black">Select Group</option>
                     {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => <option key={bg} value={bg} className="bg-white dark:bg-black">{bg}</option>)}
                   </select>
                 </div>
-                <div className="flex items-end">
-                  <button className="w-full bg-neutral-900 dark:bg-white text-white dark:text-black font-black py-3 rounded-xl hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white transition-all text-xs uppercase tracking-widest shadow-lg">
+                <div className="flex items-end mt-4 sm:mt-0">
+                  <button className="w-full bg-neutral-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-xl hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white transition-all text-[10px] md:text-xs uppercase tracking-widest shadow-lg">
                     Register Member
                   </button>
                 </div>
@@ -144,34 +150,34 @@ export default function ManageMembers() {
             </form>
 
             {/* MEMBERS LIST */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {members.map(m => (
-                <div key={m.id} className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-6 rounded-[2rem] hover:border-rose-400 dark:hover:border-rose-500/30 transition-all group shadow-md dark:shadow-xl">
+                <div key={m.id} className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] hover:border-rose-400 dark:hover:border-rose-500/30 transition-all group shadow-md">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-500 rounded-2xl flex items-center justify-center border border-rose-200 dark:border-rose-500/20 group-hover:bg-rose-600 dark:group-hover:bg-rose-500 group-hover:text-white transition-all shadow-inner">
-                        <IdCard size={24}/>
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-500 rounded-xl md:rounded-2xl flex items-center justify-center border border-rose-200 transition-all group-hover:bg-rose-600 group-hover:text-white">
+                        <IdCard size={20} md={24}/>
                       </div>
-                      <div>
-                        <p className="font-bold text-lg leading-tight text-neutral-900 dark:text-white">{m.name}</p>
-                        <p className="text-[10px] text-rose-600 dark:text-rose-500 font-black uppercase tracking-widest">{m.designation}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-base md:text-lg leading-tight truncate text-neutral-900 dark:text-white">{m.name}</p>
+                        <p className="text-[9px] text-rose-600 dark:text-rose-500 font-black uppercase tracking-widest truncate">{m.designation}</p>
                       </div>
                     </div>
-                    <button onClick={() => deleteMember(m.id)} className="text-neutral-300 hover:text-red-500 p-2 transition-colors"><Trash2 size={18}/></button>
+                    <button onClick={() => deleteMember(m.id)} className="text-neutral-300 hover:text-red-500 p-1 transition-colors"><Trash2 size={18}/></button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 border-t border-neutral-100 dark:border-white/5 pt-4 text-[10px] font-bold uppercase tracking-tighter">
-                    <div className="flex items-center gap-2 text-neutral-500">
-                        <Hash size={12} className="text-rose-600 dark:text-rose-500" /> RI ID: <span className="text-neutral-900 dark:text-white ml-auto">{m.ri_id || 'N/A'}</span>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-2 border-t border-neutral-100 dark:border-white/5 pt-4 text-[9px] font-bold uppercase tracking-tighter">
+                    <div className="flex items-center gap-2 text-neutral-500 truncate">
+                        <Hash size={10} className="text-rose-600 shrink-0" /> RI ID: <span className="text-neutral-900 dark:text-white ml-auto truncate">{m.ri_id || 'N/A'}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-neutral-500">
-                        <Droplets size={12} className="text-rose-600 dark:text-rose-500" /> Blood: <span className="text-neutral-900 dark:text-white ml-auto">{m.blood_group}</span>
+                    <div className="flex items-center gap-2 text-neutral-500 truncate">
+                        <Droplets size={10} className="text-rose-600 shrink-0" /> Blood: <span className="text-neutral-900 dark:text-white ml-auto">{m.blood_group}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-neutral-500">
-                        <Phone size={12} className="text-rose-600 dark:text-rose-500" /> Call: <span className="text-neutral-900 dark:text-white ml-auto">{m.phone}</span>
+                    <div className="flex items-center gap-2 text-neutral-500 truncate">
+                        <Phone size={10} className="text-rose-600 shrink-0" /> Call: <span className="text-neutral-900 dark:text-white ml-auto truncate">{m.phone}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-neutral-500">
-                        <IdCard size={12} className="text-rose-600 dark:text-rose-500" /> Dist ID: <span className="text-neutral-900 dark:text-white ml-auto">{m.district_id}</span>
+                    <div className="flex items-center gap-2 text-neutral-500 truncate">
+                        <IdCard size={10} className="text-rose-600 shrink-0" /> Dist: <span className="text-neutral-900 dark:text-white ml-auto truncate">{m.district_id}</span>
                     </div>
                   </div>
                 </div>
@@ -179,10 +185,10 @@ export default function ManageMembers() {
             </div>
           </>
         ) : (
-            <div className="text-center py-20 bg-red-50 dark:bg-red-500/5 rounded-3xl border border-red-200 dark:border-red-500/20">
-                <ShieldAlert className="mx-auto text-red-600 dark:text-red-500 mb-4" size={50} />
-                <h2 className="text-red-600 dark:text-red-500 font-black uppercase italic">Access Denied</h2>
-                <p className="text-neutral-500 text-sm">Mapping not found for your email.</p>
+            <div className="text-center py-20 bg-red-50 dark:bg-red-500/5 rounded-3xl border border-red-200">
+                <ShieldAlert className="mx-auto text-red-600 mb-4" size={50} />
+                <h2 className="text-red-600 dark:text-red-500 font-black uppercase italic text-sm">Access Denied</h2>
+                <p className="text-neutral-500 text-xs">Mapping not found for your account.</p>
             </div>
         )}
       </div>

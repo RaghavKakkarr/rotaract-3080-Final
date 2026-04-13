@@ -10,21 +10,21 @@ import Link from 'next/link';
 export default function HomePage() {
   const regions = ["Chandigarh", "Punjab", "Haryana", "Himachal Pradesh", "Uttarakhand", "Uttar Pradesh"];
 
-  // 👇 SYNCED WITH COUNCIL PAGE
+  // 👇 ADDED FULL FORMS FOR DRR & DRCC
   const councilPreview = [
     { 
       n: "Rtn. Dr. Rita Kalra", 
-      r: "District Governor", 
+      r: "District Governor (DG)", 
       img: "/rita-kalra.jpeg" 
     }, 
     { 
       n: "PHF PP Rtr. Dr. Manu Gupta", 
-      r: "DRR", 
+      r: "District Rotaract Representative (DRR)", 
       img: "/Manu-Gupta.jpeg" 
     },
     { 
       n: "Rtn. Atul Tangri", 
-      r: "DRCC", 
+      r: "District Rotaract Committee Chair (DRCC)", 
       img: "/Atul-Tangri.jpeg" 
     },
   ];
@@ -51,7 +51,7 @@ export default function HomePage() {
               Find a Club <ArrowRight size={16} />
             </Link>
             <Link href="/dashboard" className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 px-6 md:px-10 py-4 rounded-xl font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:border-rose-500 transition-all text-neutral-600 dark:text-white flex items-center justify-center gap-2">
-              President Portal <Fingerprint size={16} />
+              Admin Portal <Fingerprint size={16} />
             </Link>
           </div>
         </section>
@@ -59,12 +59,12 @@ export default function HomePage() {
         {/* 📊 2. DISTRICT STATS GRID */}
         <section className="mb-16 md:mb-20 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {[
-            { l: 'Members', v: '3000+', i: Users, c: 'text-blue-600' },
-            { l: 'Clubs', v: '60+', i: Building, c: 'text-rose-600' },
+            { l: 'Members', v: '2000+', i: Users, c: 'text-blue-600' },
+            { l: 'Clubs', v: '80+', i: Building, c: 'text-rose-600' },
             { l: 'Impact Hours', v: '150k+', i: Activity, c: 'text-green-600' },
-            { l: 'Zones', v: '06', i: MapPin, c: 'text-amber-600' },
+            { l: 'Zones', v: '07', i: MapPin, c: 'text-amber-600' },
           ].map((s, i) => (
-            <div key={i} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-5 rounded-2xl hover:border-neutral-400 transition-all">
+            <div key={i} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
               <s.i className={`${s.c} mb-3`} size={20} />
               <h3 className="text-2xl md:text-3xl font-black italic">{s.v}</h3>
               <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400">{s.l}</p>
@@ -83,17 +83,17 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <div className="bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden group relative">
-             <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1000" className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 opacity-80" alt="District 3080 Action" />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden relative shadow-sm">
+             <img src="/Front.jpg" className="w-full h-full object-cover opacity-90" alt="District 3080 Action" />
+             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
              <div className="absolute bottom-6 left-6">
                 <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest italic">• North India's Finest</p>
-                <p className="text-xs font-bold text-white italic">"Action is the fundamental key to all success."</p>
+                <p className="text-xs md:text-sm font-bold text-white italic">"Action is the fundamental key to all success."</p>
              </div>
           </div>
         </section>
 
-        {/* 🏛️ 4. CORE AVENUES */}
+        {/* 🏛️ 4. CORE AVENUES - PERMANENTLY HIGHLIGHTED */}
         <section className="mb-16 md:mb-20">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter">Avenues of <span className="text-rose-600">Impact</span></h2>
@@ -101,22 +101,30 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { t: 'Professional Growth', d: 'Mentorship and vocational skill building.', ic: Microscope },
-              { t: 'Community Action', d: 'Direct intervention in health and education.', ic: HeartPulse },
-              { t: 'Global Synergy', d: 'International exchange and collaboration.', ic: Globe },
+              { t: 'Professional Growth', d: 'Leadership training through hands on project management and skill building opportunities.', ic: Microscope },
+              { t: 'Community Action', d: 'Identifying local needs and implementing sustainable projects.', ic: HeartPulse },
+              { t: 'Global Synergy', d: 'Connecting members throughout the globe by promoting unparalleled networking with global partners.', ic: Globe },
             ].map((p, i) => (
-              <div key={i} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-8 rounded-[2rem] transition-all duration-500 group hover:border-rose-500 hover:shadow-[0_20px_50px_rgba(225,29,72,0.1)]">
-                <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all duration-500 text-rose-600">
+              <div key={i} className="bg-white dark:bg-white/5 border border-rose-200 dark:border-rose-500/30 p-8 rounded-[2rem] shadow-[0_10px_30px_rgba(225,29,72,0.05)]">
+                <div className="w-14 h-14 bg-rose-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-rose-500/30">
                   <p.ic size={28} />
                 </div>
-                <h3 className="text-lg font-black uppercase italic mb-2 group-hover:text-rose-600 transition-colors">{p.t}</h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 italic leading-relaxed">{p.d}</p>
+                <h3 className="text-lg font-black uppercase italic mb-2 text-rose-600 dark:text-rose-500">{p.t}</h3>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400 italic leading-relaxed">{p.d}</p>
               </div>
             ))}
           </div>
+          <div className="text-center mt-8">
+            <Link 
+              href="/service" 
+              className="inline-flex items-center gap-2 bg-neutral-100 dark:bg-white/5 text-neutral-900 dark:text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 transition-all border border-neutral-200 dark:border-white/10 hover:border-transparent shadow-sm"
+            >
+              Explore All Avenues <ArrowRight size={14} />
+            </Link>
+          </div>
         </section>
 
-        {/* 📅 5. BROADCAST FEED */}
+        {/* 📅 5. BROADCAST FEED - PERMANENTLY HIGHLIGHTED */}
         <section className="mb-16 md:mb-20 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 p-6 md:p-12 rounded-[2.5rem] md:rounded-[4rem] shadow-xl dark:shadow-none overflow-hidden relative">
           <div className="absolute top-0 right-0 p-10 opacity-[0.03] rotate-12 pointer-events-none"><Rocket size={300} /></div>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 relative z-10">
@@ -128,46 +136,55 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
             {[
-              { t: "Medical Mission", l: "Chandigarh", d: "Aug 15", a: "Community" },
-              { t: "Leadership Summit", l: "Shimla", d: "Sept 02", a: "Vocational" },
-              { t: "Environment Drive", l: "Ludhiana", d: "Sept 10", a: "International" },
+              { t: "District DOTS", l: "Tentative", d: "May 31", a: "Training" },
+              { t: "PETS & SETS", l: "Tentative", d: "Jun 14", a: "Leadership" },
+              { t: "Annapurna Week", l: "District Wide", d: "Jul 01", a: "Community" },
             ].map((e, i) => (
-              <div key={i} className="bg-neutral-50 dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-6 rounded-[1.5rem] hover:bg-white dark:hover:bg-rose-600 hover:border-rose-500 transition-all group">
+              <div key={i} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-6 rounded-[1.5rem] shadow-sm">
                 <div className="flex justify-between items-start mb-4">
-                   <Calendar className="text-rose-600 dark:text-rose-500 group-hover:text-rose-600 dark:group-hover:text-white" size={18} />
-                   <span className="text-[8px] font-black uppercase bg-neutral-200 dark:bg-white/10 text-neutral-600 px-2 py-1 rounded">{e.a}</span>
+                   <Calendar className="text-rose-600 dark:text-rose-500" size={18} />
+                   <span className="text-[8px] font-black uppercase bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2.5 py-1.5 rounded-md">{e.a}</span>
                 </div>
-                <h4 className="text-base font-black uppercase italic mb-4 text-neutral-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-white">{e.t}</h4>
-                <div className="flex justify-between items-center pt-4 border-t border-neutral-200 dark:border-white/10 text-[9px] font-black uppercase text-neutral-500 group-hover:text-neutral-900 dark:group-hover:text-white">
+                <h4 className="text-base font-black uppercase italic mb-4 text-neutral-900 dark:text-white">{e.t}</h4>
+                <div className="flex justify-between items-center pt-4 border-t border-neutral-200 dark:border-white/10 text-[9px] font-black uppercase text-neutral-500 dark:text-neutral-400">
                   <span>{e.l}</span>
-                  <span className="text-rose-600 dark:text-rose-500 group-hover:text-white">{e.d}</span>
+                  <span className="text-rose-600 dark:text-rose-500">{e.d}</span>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* 🏛️ 6. LEADERSHIP DNA - FIXED WITH IMAGES FROM COUNCIL PAGE */}
-        <section className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] mb-16 md:mb-24">
+        {/* 🏛️ 6. LEADERSHIP DNA - PERMANENT FULL COLOR */}
+        <section className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] mb-16 md:mb-24 shadow-sm">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter">District <span className="text-rose-600">Council</span></h2>
             <p className="text-neutral-500 uppercase tracking-widest text-[8px] font-bold italic">The architects of RID 3080's success</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {councilPreview.map((lead, i) => (
-              <div key={i} className="flex flex-col items-center group">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-neutral-100 dark:bg-neutral-900 rounded-full mb-4 overflow-hidden border-2 border-transparent group-hover:border-rose-500 transition-all shadow-xl grayscale group-hover:grayscale-0">
+              <div key={i} className="flex flex-col items-center">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-neutral-100 dark:bg-neutral-900 rounded-full mb-4 overflow-hidden border-[3px] border-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.15)]">
                   <img 
                     src={lead.img} 
                     alt={lead.n} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    className="w-full h-full object-cover" 
                     onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + lead.n.replace(' ', '+'); }}
                   />
                 </div>
                 <h4 className="text-sm md:text-lg font-black uppercase text-neutral-900 dark:text-white text-center leading-tight">{lead.n}</h4>
-                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-rose-600 text-center mt-1">{lead.r}</p>
+                {/* 👇 Adjusted leading/px for longer full forms so they wrap beautifully */}
+                <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-rose-600 text-center mt-1.5 px-2 leading-relaxed">{lead.r}</p>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-10">
+            <Link 
+              href="/council" 
+              className="inline-flex items-center gap-2 bg-neutral-100 dark:bg-white/5 text-neutral-900 dark:text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 transition-all border border-neutral-200 dark:border-white/10 hover:border-transparent shadow-sm"
+            >
+              View Full Council <ArrowRight size={14} />
+            </Link>
           </div>
         </section>
 

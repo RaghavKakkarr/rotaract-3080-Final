@@ -28,7 +28,6 @@ export default function PublicEventsPage() {
   }, []);
 
   return (
-    // 👇 FIXED: Mobile pt-28 (navbar clear), Desktop pt-32
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-28 md:pt-32 pb-20 px-4 md:px-6 font-sans transition-colors duration-300 overflow-x-hidden">
       
       <div className="max-w-6xl mx-auto relative z-10">
@@ -42,7 +41,6 @@ export default function PublicEventsPage() {
           <p className="text-rose-600 dark:text-rose-500 font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] mb-4 italic tracking-widest leading-none">
             • live district action feed
           </p>
-          {/* 📱 Mobile: text-4xl, Desktop: text-8xl */}
           <h1 className="text-4xl md:text-8xl font-black italic uppercase tracking-tighter mb-6 md:mb-8 leading-[1.1] md:leading-none">
             District <span className="text-rose-600 dark:text-rose-500 text-not-italic font-sans">Broadcasts</span>
           </h1>
@@ -63,28 +61,32 @@ export default function PublicEventsPage() {
             <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-neutral-500">No approved events available right now.</p>
           </div>
         ) : (
-          /* Grid: Mobile 1 column, Desktop 3 columns */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {events.map((event, index) => {
               const isOfficial = event.club_name === 'RID 3080 OFFICIAL';
 
               return (
+                // 👇 FIX: Removed group hover logic, added permanent shadow and border for a solid look
                 <motion.div 
                   key={event.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden group hover:border-rose-400 dark:hover:border-rose-500/50 transition-all duration-500 shadow-sm dark:shadow-none flex flex-col h-full"
+                  className="bg-white dark:bg-white/[0.03] border border-rose-200 dark:border-rose-500/30 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_10px_30px_rgba(225,29,72,0.05)] flex flex-col h-full"
                 >
                   {/* Image Section */}
-                  <div className="aspect-video relative overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                  <div className="aspect-video relative overflow-hidden bg-neutral-100 dark:bg-neutral-900 border-b border-rose-100 dark:border-rose-500/20">
+                    {/* 👇 FIX: Removed grayscale, always full color */}
                     <img 
                       src={event.image_url} 
                       alt={event.title} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" 
+                      className="w-full h-full object-cover" 
                     />
+                    {/* 👇 FIX: Gradient overlay to make tags pop more */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                    
                     <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
-                      <span className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest shadow-xl border border-white/10 flex items-center gap-2 ${isOfficial ? 'bg-rose-600 text-white' : 'bg-neutral-900 text-white'}`}>
+                      <span className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest shadow-xl border flex items-center gap-2 ${isOfficial ? 'bg-rose-600 border-rose-500 text-white' : 'bg-neutral-900/90 backdrop-blur-sm border-white/20 text-white'}`}>
                         {isOfficial && <Sparkles size={10} />}
                         {isOfficial ? 'Official Broadcast' : event.club_name}
                       </span>
@@ -92,15 +94,16 @@ export default function PublicEventsPage() {
                   </div>
                   
                   {/* Content Area */}
-                  <div className="p-8 md:p-10 flex flex-col flex-1 text-left">
-                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter leading-tight mb-4 text-neutral-900 dark:text-white group-hover:text-rose-600 transition-colors">
+                  <div className="p-8 md:p-10 flex flex-col flex-1 text-left bg-white dark:bg-transparent">
+                    {/* 👇 FIX: Always pink title */}
+                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter leading-tight mb-4 text-rose-600 dark:text-rose-500">
                       {event.title}
                     </h3>
-                    <p className="text-neutral-500 dark:text-neutral-500 text-xs md:text-sm italic font-medium leading-relaxed mb-6 md:mb-8 flex-1 line-clamp-3">
+                    <p className="text-neutral-600 dark:text-neutral-400 text-xs md:text-sm italic font-medium leading-relaxed mb-6 md:mb-8 flex-1 line-clamp-3">
                       "{event.description}"
                     </p>
                     
-                    <div className="border-t border-neutral-100 dark:border-white/5 pt-6 md:pt-8 mt-auto flex items-center justify-between">
+                    <div className="border-t border-rose-100 dark:border-rose-500/20 pt-6 md:pt-8 mt-auto flex items-center justify-between">
                       <div className="flex flex-col gap-1">
                         <span className="flex items-center gap-1.5 text-[8px] font-black text-rose-600 uppercase tracking-widest italic">
                           <MapPin size={10} /> {event.location || 'RID 3080'}
@@ -111,11 +114,12 @@ export default function PublicEventsPage() {
                       </div>
                       
                       {!isOfficial && (
+                        // 👇 FIX: Button permanently styled like a solid action button
                         <a 
                           href={event.image_url} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="flex items-center gap-2 bg-neutral-100 dark:bg-white/5 hover:bg-rose-600 dark:hover:bg-rose-600 text-neutral-900 dark:text-white hover:text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all"
+                          className="flex items-center gap-2 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-500 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 transition-all px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest"
                         >
                           <ExternalLink size={14} /> Evidence
                         </a>

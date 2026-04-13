@@ -12,7 +12,8 @@ export default function ClubFinder() {
   const [search, setSearch] = useState('');
   const [activeZone, setActiveZone] = useState('All');
 
-  const zones = ['All', '1', '2', '3', '4', '5', '6'];
+  // 👇 FIX: Added '7' to the zones array
+  const zones = ['All', '1', '2', '3', '4', '5', '6', '7'];
 
   useEffect(() => { fetchClubs(); }, []);
 
@@ -38,16 +39,14 @@ export default function ClubFinder() {
   });
 
   return (
-    // 👇 FIX 1: pt-24 on mobile, pt-32 on desktop
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-24 md:pt-32 pb-20 px-4 md:px-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         
-        {/* HEADER - 👇 FIX 2: mb-8 on mobile, mb-16 on desktop */}
+        {/* HEADER */}
         <header className="mb-8 md:mb-16">
-          <p className="text-rose-600 dark:text-rose-500 font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[8px] md:text-[10px] mb-2 md:mb-4 italic">
+          <p className="text-rose-600 dark:text-rose-500 font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[8px] md:text-[10px] mb-2 md:mb-4 italicLEADING-none">
             • searchable district directory
           </p>
-          {/* 👇 FIX 3: text-4xl on mobile, text-8xl on desktop */}
           <h1 className="text-4xl md:text-8xl font-black italic uppercase tracking-tighter mb-4 md:mb-8 leading-none">
             Club <span className="text-rose-600 dark:text-rose-500 text-not-italic font-sans">Finder</span>
           </h1>
@@ -56,7 +55,7 @@ export default function ClubFinder() {
           </p>
         </header>
 
-        {/* FILTERS & SEARCH - 👇 FIX 4: Sticky top-16 for mobile, smaller padding */}
+        {/* FILTERS & SEARCH */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center sticky top-20 md:top-28 z-50 py-3 md:py-6 bg-neutral-50/95 dark:bg-neutral-950/95 backdrop-blur-md px-1">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
@@ -69,16 +68,15 @@ export default function ClubFinder() {
             />
           </div>
 
-          {/* 👇 FIX 5: Horizontal scroll for zones on mobile if they overflow */}
-          <div className="flex flex-wrap md:flex-nowrap gap-2 justify-start md:justify-center w-full md:w-auto">
+          <div className="flex flex-wrap md:flex-nowrap gap-2 justify-start md:justify-center w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-thin">
             {zones.map(zone => (
               <button 
                 key={zone}
                 onClick={() => setActiveZone(zone)}
-                className={`px-3 md:px-5 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`px-3 md:px-5 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                   activeZone === zone 
                   ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30' 
-                  : 'bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-neutral-500'
+                  : 'bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-neutral-500 hover:text-rose-600'
                 }`}
               >
                 {zone === 'All' ? 'All' : `Z-${zone}`}
@@ -95,41 +93,40 @@ export default function ClubFinder() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {filteredClubs.map((club) => (
-              // 👇 FIX 6: Smaller padding (p-6) and rounded corners (rounded-[2.5rem]) for mobile
-              <div key={club.id} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] group hover:border-rose-400 transition-all duration-500 shadow-sm relative overflow-hidden">
+              <div key={club.id} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] relative overflow-hidden transition-all duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.03)] dark:shadow-none">
                 
-                <div className="absolute top-0 right-0 p-4 md:p-8 opacity-[0.03] dark:opacity-[0.02] group-hover:opacity-10 transition-all">
+                <div className="absolute top-0 right-0 p-4 md:p-8 opacity-[0.08] dark:opacity-[0.04] text-rose-600 dark:text-rose-700 transition-all">
                     <Building2 size={80} md={120} />
                 </div>
                 
-                <div className="mb-4">
+                <div className="mb-4 relative z-10">
                   <span className="bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-500 text-[8px] font-black px-3 py-1 rounded-full border border-rose-200 dark:border-rose-500/20 uppercase tracking-widest">
                     Zone {String(club.zone || '').toLowerCase().replace('zone', '').trim()}
                   </span>
                 </div>
 
-                <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter mb-6 text-neutral-900 dark:text-white group-hover:text-rose-600 transition-colors leading-tight">
+                <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter mb-6 text-rose-600 dark:text-rose-500 transition-colors leading-tight relative z-10">
                   {club.name}
                 </h3>
                 
-                <div className="space-y-4 border-t border-neutral-100 dark:border-white/5 pt-6">
+                <div className="space-y-4 border-t border-neutral-100 dark:border-white/5 pt-6 relative z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-white/5 flex items-center justify-center text-rose-600 shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-500/20">
                         <Users size={14} />
                     </div>
                     <div>
                         <p className="text-[7px] font-black uppercase text-neutral-400 tracking-widest mb-0.5">President</p>
-                        <p className="text-xs font-bold text-neutral-800 dark:text-white">{club.president || 'TBD'}</p>
+                        <p className="text-xs font-bold text-neutral-800 dark:text-white leading-tight">{club.president || 'TBD'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-white/5 flex items-center justify-center text-rose-600 shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-rose-500/20">
                         <MapPin size={14} />
                     </div>
                     <div>
                         <p className="text-[7px] font-black uppercase text-neutral-400 tracking-widest mb-0.5">Rotary Sponsor</p>
-                        <p className="text-xs font-bold text-neutral-800 dark:text-white">{club.sponsor || 'N/A'}</p>
+                        <p className="text-xs font-bold text-neutral-800 dark:text-white leading-tight">{club.sponsor || 'N/A'}</p>
                     </div>
                   </div>
                 </div>

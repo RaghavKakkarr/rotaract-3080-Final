@@ -85,14 +85,13 @@ export default function IndividualReporting() {
   if (loading) return <div className="min-h-screen bg-neutral-50 dark:bg-black flex items-center justify-center text-rose-600 dark:text-rose-500 font-black italic animate-pulse uppercase tracking-widest px-6 text-center text-sm">Verifying Roster...</div>;
 
   return (
-    // 👇 FIX: pt-20 for mobile, pt-10 for desktop (Dashboard Standard)
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white pt-20 md:pt-10 px-4 md:px-6 pb-20 font-sans transition-colors duration-300 overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
         
-        {/* UNIFIED HEADER - Responsive Padding */}
+        {/* UNIFIED HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-sm">
           <div className="flex items-center gap-3 md:gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 text-neutral-500 hover:text-amber-600 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-neutral-100 dark:bg-white/5 px-3 py-2 md:px-4 md:py-3 rounded-xl">
+            <Link href="/dashboard" className="flex items-center gap-2 text-neutral-900 dark:text-white hover:text-amber-600 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 px-3 py-2 md:px-4 md:py-3 rounded-xl shadow-sm">
               <ArrowLeft size={14} md={16} /> Back
             </Link>
             <div>
@@ -109,14 +108,21 @@ export default function IndividualReporting() {
         {clubInfo ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
             
-            {/* LEFT: INDIVIDUAL HOURS LOG - Main focus on Mobile */}
+            {/* LEFT: INDIVIDUAL HOURS LOG - PERMANENTLY HIGHLIGHTED (BLUE) */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm">
+              {/* 👇 FIX: Permanent Blue tinted border and shadow */}
+              <div className="bg-white dark:bg-white/[0.03] border border-blue-200 dark:border-blue-500/30 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-[0_10px_30px_rgba(37,99,235,0.05)]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                  <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                    <Clock size={20} /> Member Service
+                  <h2 className="text-lg md:text-xl font-bold flex items-center gap-3 text-blue-600 dark:text-blue-500">
+                    {/* 👇 FIX: Solid Blue Icon Box */}
+                    <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+                      <Clock size={18} />
+                    </div>
+                    Member Service
                   </h2>
-                  <span className="text-[8px] md:text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-widest italic w-fit">Update Monthly</span>
+                  <span className="text-[8px] md:text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded-full font-black uppercase tracking-widest italic w-fit shadow-sm shadow-blue-500/30">
+                    Update Monthly
+                  </span>
                 </div>
                 
                 <div className="space-y-3 max-h-[500px] md:max-h-[600px] overflow-y-auto pr-1 md:pr-2 custom-scrollbar">
@@ -124,20 +130,21 @@ export default function IndividualReporting() {
                     <p className="text-neutral-500 text-sm italic py-10 text-center">Roster empty. Please add members.</p>
                   ) : (
                     members.map((member) => (
-                      <div key={member.id} className="bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/5 p-4 rounded-xl flex items-center justify-between gap-4 group">
+                      <div key={member.id} className="bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/5 p-4 rounded-xl flex items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-sm tracking-tight truncate">{member.name}</p>
+                          <p className="font-bold text-sm tracking-tight truncate text-neutral-900 dark:text-white">{member.name}</p>
                           <p className="text-[9px] text-neutral-500 font-black uppercase truncate">{member.district_id}</p>
                         </div>
                         <div className="flex items-center gap-2">
+                          {/* 👇 FIX: Permanent inner shadow and blue border for input */}
                           <input 
                             type="number" 
                             defaultValue={member.volunteer_hours}
                             onBlur={(e) => handleHourUpdate(member.id, e.target.value)}
-                            className="w-16 md:w-20 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-white/10 rounded-lg px-2 py-2 text-center text-sm font-bold focus:border-blue-500 outline-none text-blue-600"
+                            className="w-16 md:w-20 bg-blue-50/50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/30 rounded-lg px-2 py-2 text-center text-sm font-bold focus:border-blue-500 outline-none text-blue-600 dark:text-blue-400 shadow-inner"
                             placeholder="0"
                           />
-                          <span className="text-[9px] font-black text-neutral-400 uppercase">Hrs</span>
+                          <span className="text-[9px] font-black text-blue-600/50 dark:text-blue-400/50 uppercase">Hrs</span>
                         </div>
                       </div>
                     ))
@@ -146,37 +153,48 @@ export default function IndividualReporting() {
               </div>
             </div>
 
-            {/* RIGHT: ROM NOMINATION */}
+            {/* RIGHT: ROM NOMINATION - PERMANENTLY HIGHLIGHTED (AMBER) */}
             <div className="space-y-6">
-              <div className={`bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all ${!isNominationOpen ? 'opacity-50 grayscale' : ''}`}>
-                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 text-amber-600 mb-6 uppercase italic tracking-tighter leading-tight">
-                  <Award size={20} /> Nominate ROM
+              {/* 👇 FIX: Permanent Amber tinted border and shadow */}
+              <div className={`bg-white dark:bg-white/[0.03] border border-amber-200 dark:border-amber-500/30 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-[0_10px_30px_rgba(217,119,6,0.05)] transition-all ${!isNominationOpen ? 'opacity-50 grayscale' : ''}`}>
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-3 text-amber-600 dark:text-amber-500 mb-6 uppercase italic tracking-tighter leading-tight">
+                  {/* 👇 FIX: Solid Amber Icon Box */}
+                  <div className="w-10 h-10 bg-amber-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+                    <Award size={18} />
+                  </div>
+                  Nominate ROM
                 </h2>
                 {!isNominationOpen && (
-                  <div className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 p-4 rounded-xl text-[9px] font-black uppercase mb-6 flex items-start gap-2 border border-amber-200">
+                  <div className="bg-amber-600 text-white p-4 rounded-xl text-[9px] font-black uppercase mb-6 flex items-start gap-2 shadow-sm shadow-amber-500/20">
                     <Lock size={14} className="shrink-0" />
                     Window: 25th - EOM
                   </div>
                 )}
                 <form onSubmit={handleNominationSubmit} className="space-y-4">
+                  {/* 👇 FIX: Inner shadow and amber border focus logic */}
                   <select 
                     required 
                     value={nominationData.rotaractor_name}
                     onChange={e => setNominationData({...nominationData, rotaractor_name: e.target.value})}
-                    className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-amber-500 text-neutral-900 dark:text-white"
+                    className="w-full bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-amber-500 text-neutral-900 dark:text-white shadow-inner"
                   >
                     <option value="">Select Nominee</option>
                     {members.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
                   </select>
+                  
                   <textarea 
                     required 
                     rows="3"
-                    placeholder="Citation..."
+                    placeholder="Reason for Nomination..."
                     value={nominationData.achievements}
                     onChange={e => setNominationData({...nominationData, achievements: e.target.value})}
-                    className="w-full bg-neutral-100 dark:bg-black border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500 resize-none"
+                    className="w-full bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500 resize-none shadow-inner text-neutral-900 dark:text-white"
                   ></textarea>
-                  <button className="w-full bg-amber-600 text-white dark:text-black font-black py-4 rounded-xl text-[9px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all">Submit</button>
+                  
+                  {/* 👇 FIX: Solid permanent Amber button */}
+                  <button className="w-full bg-amber-600 text-white font-black py-4 rounded-xl text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-amber-500/30 hover:bg-amber-700 transition-all flex items-center justify-center gap-2">
+                    Submit <Send size={12} />
+                  </button>
                 </form>
                 {status && <p className="text-green-600 text-[9px] mt-4 font-black uppercase text-center animate-pulse">{status}</p>}
               </div>

@@ -18,8 +18,8 @@ export function ThemeProvider({ children }) {
   return (
     <NextThemesProvider 
   attribute="class" 
-  defaultTheme="dark" // 👈 Default dark rakho testing ke liye
-  enableSystem={false} // 👈 System setting ko ignore maaro abhi
+  defaultTheme="system" // 👈 Default dark rakho testing ke liye
+  enableSystem={true} // 👈 System setting ko ignore maaro abhi
 >
   {children}
 </NextThemesProvider>

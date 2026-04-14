@@ -48,7 +48,7 @@ export default function CouncilPage() {
   const councilMembers = [
     { name: "Rtn. Dr. Rita Kalra", role: "District Governor", isHead: true, imgUrl: "/rita-kalra.jpeg" },
     { name: "PHF PP Rtr. Dr. Manu Gupta", role: "District Rotaract Representative (DRR)", isHead: true, imgUrl: "/Manu-Gupta.jpeg" },
-    { name: "Rtn. Atul Tangri", role: "District Rotaract Committee Chair (DRCC)", isHead: true, imgUrl: "/Atul-Tangri.jpeg" },
+    { name: "Rtn. Atul Tangri", role: "District Rotaract Committee Chair (DRCC)", isHead: true, imgUrl: "/Atul-Sir.jpeg" },
     { name: "To Be Announced", role: "District Trainer" },
     { name: "To Be Announced", role: "District Youth Chair" },
     { name: "To Be Announced", role: "DRCC Co-Chair" },

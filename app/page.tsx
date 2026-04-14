@@ -25,7 +25,7 @@ export default function HomePage() {
     { 
       n: "Rtn. Atul Tangri", 
       r: "District Rotaract Committee Chair (DRCC)", 
-      img: "/Atul-Tangri.jpeg" 
+      img: "/Atul-Sir.jpeg" 
     },
   ];
 

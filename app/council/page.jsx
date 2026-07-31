@@ -47,7 +47,7 @@ export default function CouncilPage() {
   // 👇 FIX: Full forms added, Undecided members marked as "To Be Announced", kept up to Zone 7
   const councilMembers = [
     { name: "Rtn. Dr. Rita Kalra", role: "District Governor", isHead: true, imgUrl: "/rita-kalra.jpeg" },
-    { name: "PHF PP Rtr. Dr. Manu Gupta", role: "District Rotaract Representative (DRR)", isHead: true, imgUrl: "/Manu-Gupta.jpeg" },
+    { name: " Yet to be annouced", role: "District Rotaract Representative (DRR)", isHead: true, imgUrl: "" },
     { name: "Rtn. Atul Tangri", role: "District Rotaract Committee Chair (DRCC)", isHead: true, imgUrl: "/Atul-Sir.jpeg" },
     { name: "To Be Announced", role: "District Trainer" },
     { name: "To Be Announced", role: "District Youth Chair" },

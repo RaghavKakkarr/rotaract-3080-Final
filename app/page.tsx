@@ -19,7 +19,7 @@ export default function HomePage() {
     }, 
     { 
       n: "Rtr. Purandhi Gupta", 
-      r: "District Rotaract Representative (DRR)", 
+      r: "District Rotaract Representative (Only for Demo Purpose)", 
       img: "/drr.jpeg" 
     },
     { 

@@ -18,9 +18,9 @@ export default function HomePage() {
       img: "/rita-kalra.jpeg" 
     }, 
     { 
-      n: "PHF PP Rtr. Dr. Manu Gupta", 
+      n: "Rtr. Purandhi Gupta", 
       r: "District Rotaract Representative (DRR)", 
-      img: "/Manu-Gupta.jpeg" 
+      img: "/drr.jpeg" 
     },
     { 
       n: "Rtn. Atul Tangri", 

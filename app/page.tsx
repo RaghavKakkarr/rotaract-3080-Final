@@ -18,9 +18,9 @@ export default function HomePage() {
       img: "/rita-kalra.jpeg" 
     }, 
     { 
-      n: "Rtr. Purandhi Gupta", 
-      r: "District Rotaract Representative (Only for Demo Purpose)", 
-      img: "/drr.jpeg" 
+      n: "Rtr. ", 
+      r: "District Rotaract Representative", 
+      img: "" 
     },
     { 
       n: "Rtn. Atul Tangri", 

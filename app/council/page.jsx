@@ -2,23 +2,23 @@
 import React from 'react';
 import { Users, Star } from 'lucide-react';
 
-function MemberCard({ name, role, isHead, imgUrl }) {
+function MemberCard({ name, role, isHead, imgUrl, position = "object-top" }) {
   return (
     <div className={`bg-white dark:bg-white/5 border ${isHead ? 'border-rose-500/50 shadow-[0_0_15px_rgba(225,29,72,0.1)]' : 'border-neutral-200 dark:border-white/10'} rounded-[1.5rem] p-4 md:p-5 group transition-all duration-500 shadow-sm dark:shadow-none flex flex-col`}>
       
       <div className="aspect-square bg-neutral-100 dark:bg-neutral-900 rounded-2xl mb-4 flex items-center justify-center overflow-hidden relative shrink-0">
         {isHead && (
           <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-rose-600 text-white p-1.5 rounded-lg shadow-md z-20">
-            <Star size={10} md={12} fill="currentColor" />
+            <Star size={10} className="md:w-3 md:h-3" fill="currentColor" />
           </div>
         )}
         
-        {/* 👇 FIX: Removed grayscale, always full color now */}
+        {/* 👇 FIX: object-cover ke sath custom alignment (object-top/object-center) apply ki hai */}
         {imgUrl ? (
           <img 
             src={imgUrl} 
             alt={name} 
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className={`w-full h-full object-cover ${position} group-hover:scale-105 transition-transform duration-700`}
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
@@ -44,11 +44,29 @@ function MemberCard({ name, role, isHead, imgUrl }) {
 }
 
 export default function CouncilPage() {
-  // 👇 FIX: Full forms added, Undecided members marked as "To Be Announced", kept up to Zone 7
   const councilMembers = [
-    { name: "Rtn. Dr. Rita Kalra", role: "District Governor", isHead: true, imgUrl: "/rita-kalra.jpeg" },
-    { name: "Rtr. Purandhi Gupta ", role: "District Rotaract Representative (DRR)", isHead: true, imgUrl: "/drr.jpeg" },
-    { name: "Rtn. Atul Tangri", role: "District Rotaract Committee Chair (DRCC)", isHead: true, imgUrl: "/Atul-Sir.jpeg" },
+    { 
+      name: "Rtn. Dr. Rita Kalra", 
+      role: "District Governor", 
+      isHead: true, 
+      imgUrl: "/rita-kalra.jpeg",
+      position: "object-top" 
+    },
+    { 
+      name: "Rtr. Purandhi Gupta", 
+      role: "District Rotaract Representative (DRR)", 
+      isHead: true, 
+      imgUrl: "/drr.jpeg",
+      // 👇 Purandhi's photo alignment: Top aligned so face stays clear
+      position: "object-top" // agar thoda neeche karna ho toh "object-[center_20%]" likh sakte ho
+    },
+    { 
+      name: "Rtn. Atul Tangri", 
+      role: "District Rotaract Committee Chair (DRCC)", 
+      isHead: true, 
+      imgUrl: "/Atul-Sir.jpeg",
+      position: "object-top" 
+    },
     { name: "To Be Announced", role: "District Trainer" },
     { name: "To Be Announced", role: "District Youth Chair" },
     { name: "To Be Announced", role: "DRCC Co-Chair" },

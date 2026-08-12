@@ -9,20 +9,64 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// 🌟 TOP OFFICIAL DISTRICT BROADCASTS
+const officialDistrictEvents = [
+  {
+    id: 'official-drr-installation',
+    title: 'District Installation Ceremony – DRR Rtr. Purandhi Gupta',
+    description: 'Official Installation of District Rotaract Representative Rtr. Purandhi Gupta & the District Council 2026-27. Leading RID 3080 into a legacy of service and leadership.',
+    club_name: 'RID 3080 OFFICIAL',
+    location: 'District 3080 HQ',
+    display_date: '1st Week of September, 2026',
+    image_url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+    is_official_preset: true,
+  },
+  {
+    id: 'official-dlts-2026',
+    title: 'District Leadership Training Seminar (DLTS)',
+    description: 'Empowering club presidents, secretaries, and upcoming district leaders with executive training, governance guidelines, and reporting workshops.',
+    club_name: 'RID 3080 OFFICIAL',
+    location: 'Zone 1 - Zone 7 Hubs',
+    display_date: 'Mid September, 2026',
+    image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80',
+    is_official_preset: true,
+  },
+  {
+    id: 'official-mega-blood-drive',
+    title: 'District Mega Blood Donation & Health Drive',
+    description: 'Multi-club flagship community impact initiative uniting all clubs of RID 3080 for statewide healthcare support.',
+    club_name: 'RID 3080 OFFICIAL',
+    location: 'All Zones, RID 3080',
+    display_date: 'Late September, 2026',
+    image_url: 'https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=1200&q=80',
+    is_official_preset: true,
+  }
+];
+
 export default function PublicEventsPage() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(officialDistrictEvents);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchApprovedEvents() {
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('is_approved', true)
-        .order('created_at', { ascending: false }); 
-      
-      if (!error && data) setEvents(data);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('is_approved', true)
+          .order('created_at', { ascending: false }); 
+        
+        if (!error && data && data.length > 0) {
+          // Official presets top par rahenge + Supabase approved dynamic events unke baad aayenge
+          setEvents([...officialDistrictEvents, ...data]);
+        } else {
+          setEvents(officialDistrictEvents);
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic broadcasts:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchApprovedEvents();
   }, []);
@@ -64,25 +108,29 @@ export default function PublicEventsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {events.map((event, index) => {
               const isOfficial = event.club_name === 'RID 3080 OFFICIAL';
+              
+              // Date formatter for both string text & DB timestamps
+              const formattedDate = event.display_date 
+                ? event.display_date 
+                : event.date 
+                  ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  : 'Upcoming Event';
 
               return (
-                // 👇 FIX: Removed group hover logic, added permanent shadow and border for a solid look
                 <motion.div 
-                  key={event.id}
+                  key={event.id || index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white dark:bg-white/[0.03] border border-rose-200 dark:border-rose-500/30 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_10px_30px_rgba(225,29,72,0.05)] flex flex-col h-full"
+                  transition={{ delay: index * 0.08 }}
+                  className="bg-white dark:bg-white/[0.03] border border-rose-200 dark:border-rose-500/30 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_10px_30px_rgba(225,29,72,0.05)] flex flex-col h-full hover:border-rose-400 dark:hover:border-rose-500/60 transition-all duration-300"
                 >
                   {/* Image Section */}
                   <div className="aspect-video relative overflow-hidden bg-neutral-100 dark:bg-neutral-900 border-b border-rose-100 dark:border-rose-500/20">
-                    {/* 👇 FIX: Removed grayscale, always full color */}
                     <img 
-                      src={event.image_url} 
+                      src={event.image_url || 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80'} 
                       alt={event.title} 
                       className="w-full h-full object-cover" 
                     />
-                    {/* 👇 FIX: Gradient overlay to make tags pop more */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     
                     <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
@@ -95,7 +143,6 @@ export default function PublicEventsPage() {
                   
                   {/* Content Area */}
                   <div className="p-8 md:p-10 flex flex-col flex-1 text-left bg-white dark:bg-transparent">
-                    {/* 👇 FIX: Always pink title */}
                     <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter leading-tight mb-4 text-rose-600 dark:text-rose-500">
                       {event.title}
                     </h3>
@@ -109,12 +156,11 @@ export default function PublicEventsPage() {
                           <MapPin size={10} /> {event.location || 'RID 3080'}
                         </span>
                         <span className="text-[9px] md:text-[10px] font-bold text-neutral-800 dark:text-white uppercase tracking-tighter">
-                          {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {formattedDate}
                         </span>
                       </div>
                       
-                      {!isOfficial && (
-                        // 👇 FIX: Button permanently styled like a solid action button
+                      {!event.is_official_preset && event.image_url && (
                         <a 
                           href={event.image_url} 
                           target="_blank" 

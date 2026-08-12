@@ -10,22 +10,25 @@ import Link from 'next/link';
 export default function HomePage() {
   const regions = ["Chandigarh", "Punjab", "Haryana", "Himachal Pradesh", "Uttarakhand", "Uttar Pradesh"];
 
-  // 👇 ADDED FULL FORMS FOR DRR & DRCC
+  // 👇 ADDED PROPER OBJECT POSITIONING FOR IMAGES
   const councilPreview = [
     { 
       n: "Rtn. Dr. Rita Kalra", 
       r: "District Governor (DG)", 
-      img: "/rita-kalra.jpeg" 
+      img: "/rita-kalra.jpeg",
+      pos: "object-top"
     }, 
     { 
-      n: "Rtr. Purandhi Gupta ", 
+      n: "Rtr. Purandhi Gupta", 
       r: "District Rotaract Representative (DRR)", 
-      img: "/drr.jpeg" 
+      img: "/drr.jpeg",
+      pos: "object-top" // 👈 Face stays clear and perfectly aligned
     },
     { 
       n: "Rtn. Atul Tangri", 
       r: "District Rotaract Committee Chair (DRCC)", 
-      img: "/Atul-Sir.jpeg" 
+      img: "/Atul-Sir.jpeg",
+      pos: "object-top"
     },
   ];
 
@@ -124,7 +127,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 📅 5. BROADCAST FEED - PERMANENTLY HIGHLIGHTED */}
+        {/* 📅 5. BROADCAST FEED - UPDATED WITH INSTALLATION & REAL EVENTS */}
         <section className="mb-16 md:mb-20 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 p-6 md:p-12 rounded-[2.5rem] md:rounded-[4rem] shadow-xl dark:shadow-none overflow-hidden relative">
           <div className="absolute top-0 right-0 p-10 opacity-[0.03] rotate-12 pointer-events-none"><Rocket size={300} /></div>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 relative z-10">
@@ -136,16 +139,16 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
             {[
-              { t: "District DOTS", l: "Tentative", d: "May 31", a: "Training" },
-              { t: "PETS & SETS", l: "Tentative", d: "Jun 14", a: "Leadership" },
-              { t: "Annapurna Week", l: "District Wide", d: "Jul 01", a: "Community" },
+              { t: "Installation – DRR Purandhi Gupta", l: "District HQ", d: "1st Wk Sept", a: "Official" },
+              { t: "District Training (DLTS)", l: "Zone Hubs", d: "Mid Sept", a: "Leadership" },
+              { t: "Mega Blood Donation Drive", l: "District Wide", d: "Late Sept", a: "Community" },
             ].map((e, i) => (
               <div key={i} className="bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 p-6 rounded-[1.5rem] shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                    <Calendar className="text-rose-600 dark:text-rose-500" size={18} />
                    <span className="text-[8px] font-black uppercase bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2.5 py-1.5 rounded-md">{e.a}</span>
                 </div>
-                <h4 className="text-base font-black uppercase italic mb-4 text-neutral-900 dark:text-white">{e.t}</h4>
+                <h4 className="text-base font-black uppercase italic mb-4 text-neutral-900 dark:text-white line-clamp-1">{e.t}</h4>
                 <div className="flex justify-between items-center pt-4 border-t border-neutral-200 dark:border-white/10 text-[9px] font-black uppercase text-neutral-500 dark:text-neutral-400">
                   <span>{e.l}</span>
                   <span className="text-rose-600 dark:text-rose-500">{e.d}</span>
@@ -155,7 +158,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 🏛️ 6. LEADERSHIP DNA - PERMANENT FULL COLOR */}
+        {/* 🏛️ 6. LEADERSHIP DNA - ACCURATE HEADSHOT FOCUS */}
         <section className="bg-white dark:bg-white/[0.03] border border-neutral-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] mb-16 md:mb-24 shadow-sm">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter">District <span className="text-rose-600">Council</span></h2>
@@ -164,16 +167,15 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {councilPreview.map((lead, i) => (
               <div key={i} className="flex flex-col items-center">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-neutral-100 dark:bg-neutral-900 rounded-full mb-4 overflow-hidden border-[3px] border-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.15)]">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-neutral-100 dark:bg-neutral-900 rounded-full mb-4 overflow-hidden border-[3px] border-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.15)] flex items-center justify-center">
                   <img 
                     src={lead.img} 
                     alt={lead.n} 
-                    className="w-full h-full object-cover" 
+                    className={`w-full h-full object-cover ${lead.pos || 'object-top'}`} 
                     onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + lead.n.replace(' ', '+'); }}
                   />
                 </div>
                 <h4 className="text-sm md:text-lg font-black uppercase text-neutral-900 dark:text-white text-center leading-tight">{lead.n}</h4>
-                {/* 👇 Adjusted leading/px for longer full forms so they wrap beautifully */}
                 <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-rose-600 text-center mt-1.5 px-2 leading-relaxed">{lead.r}</p>
               </div>
             ))}

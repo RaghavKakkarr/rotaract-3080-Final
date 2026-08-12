@@ -6,6 +6,9 @@ import { ThemeProvider } from './ThemeProvider'; // 👈 Step 1: Ye import kiya
 export const metadata = {
   title: 'Rotaract District 3080',
   description: 'Official Portal of Rotaract District 3080',
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {

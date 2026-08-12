@@ -55,14 +55,23 @@ export default function Navbar() {
         
         <div className={`relative z-50 flex items-center justify-between bg-white/80 dark:bg-black/60 border border-neutral-200 dark:border-white/10 backdrop-blur-xl px-5 sm:px-8 py-3 sm:py-4 rounded-[2rem] transition-all ${scrolled ? 'shadow-xl shadow-black/5 dark:shadow-black/50' : ''}`}>
           
-          {/* LOGO SECTION */}
+          {/* LOGO SECTION - 👇 FIX: Clean natural logo render without artificial box border */}
           <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3 group shrink-0">
-            <div className="w-9 h-9 md:w-10 md:h-10 bg-rose-600 rounded-[0.8rem] flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg shadow-rose-500/20 shrink-0">
-              <span className="font-black text-white text-[10px] md:text-xs tracking-tighter">3080</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 flex items-center justify-center shrink-0">
+              <img 
+                src="/icon.png" 
+                alt="Rotaract 3080 Logo" 
+                className="w-full h-full object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                loading="eager"
+              />
             </div>
             <div className="hidden sm:block">
-              <h2 className="text-xs md:text-sm font-black uppercase tracking-tighter leading-none text-neutral-900 dark:text-white italic whitespace-nowrap">Rotaract 3080</h2>
-              <p className="text-[7px] md:text-[8px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1 leading-none whitespace-nowrap">RID 3080 • India</p>
+              <h2 className="text-xs md:text-sm font-black uppercase tracking-tighter leading-none text-neutral-900 dark:text-white italic whitespace-nowrap">
+                Rotaract <span className="text-rose-600 dark:text-rose-500">3080</span>
+              </h2>
+              <p className="text-[7px] md:text-[8px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1 leading-none whitespace-nowrap">
+                RID 3080 • India
+              </p>
             </div>
           </Link>
 

@@ -2,7 +2,18 @@ import { Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-neutral-200 dark:border-white/5 bg-white dark:bg-[#050505] py-6 md:py-8 mt-auto transition-colors duration-300">
+    <footer className="w-full border-t border-neutral-200 dark:border-white/5 bg-white dark:bg-[#050505] pt-6 pb-6 md:pb-8 mt-auto transition-colors duration-300">
+      
+      {/* 🚀 PROD COVER DISCLAIMER BANNER */}
+      <div className="max-w-7xl mx-auto px-4 mb-6">
+        <div className="w-full bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 py-2.5 px-4 rounded-full flex items-center justify-center gap-2 text-center shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse shrink-0" />
+          <p className="text-rose-600 dark:text-rose-400 text-[8px] md:text-[10px] font-black uppercase tracking-widest italic leading-none">
+            Platform Optimization & Data Ingestion In Progress • 2026-27 Directories Live Syncing
+          </p>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
         
         {/* District Copyright */}

@@ -148,7 +148,7 @@ export default function ContactPage() {
                  <Mail size={28} />
               </div>
               <p className="text-neutral-500 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-1 md:mb-2 italic leading-none">Official Mail</p>
-              <h3 className="text-xl md:text-2xl font-black italic text-neutral-900 dark:text-white mb-2 break-words">drr@rotaract3080.org</h3>
+              <h3 className="text-xl md:text-2xl font-black italic text-neutral-900 dark:text-white mb-2 break-words">purandhi@rotaract3080.org</h3>
               <p className="text-[9px] md:text-[10px] font-bold text-rose-600 uppercase tracking-widest">RID 3080 • India</p>
             </div>
 

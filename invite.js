@@ -11,7 +11,7 @@ async function sendResetLink() {
 
   // 🚀 FIX: Directly redirect to /auth/reset-password
   const { data, error } = await supabase.auth.resetPasswordForEmail(testEmail, {
-    redirectTo: 'https://rotaract3080.in/auth/reset-password'
+    redirectTo: 'https://rotaract3080.in/auth/callback'
   });
 
   if (error) {

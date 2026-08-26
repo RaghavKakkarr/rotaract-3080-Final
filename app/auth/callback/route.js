@@ -10,8 +10,17 @@ export async function GET(request) {
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
-    await supabase.auth.exchangeCodeForSession(code);
+
+    // Exchange code on server
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && data?.session) {
+      // Direct session parameters query params mein attach karke reset page par bhej do
+      const response = NextResponse.redirect(`${requestUrl.origin}/auth/reset-password?access_token=${data.session.access_token}&refresh_token=${data.session.refresh_token}`);
+      return response;
+    }
   }
 
+  // Fallback if code fails
   return NextResponse.redirect(`${requestUrl.origin}/auth/reset-password`);
 }

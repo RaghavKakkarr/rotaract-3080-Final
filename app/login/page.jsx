@@ -31,19 +31,23 @@ export default function LoginPage() {
       alert("Pehle apni Email ID likho bhai!");
       return;
     }
+    
+    // 🚀 STEP 2 UPDATE: PKCE Auth Callback Route URL
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/auth/callback`,
     });
-    if (error) alert(error.message);
-    else alert("Reset link aapki email par bhej diya gaya hai! Check karo.");
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Reset link aapki email par bhej diya gaya hai! Check karo.");
+    }
   };
 
   return (
-    // 👇 FIX: pt-20 on mobile taaki back button aur form mein gap rahe
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white flex items-center justify-center px-4 md:px-6 pt-20 md:pt-0 transition-colors duration-300 relative overflow-hidden">
       
       {/* 🚀 BACK TO WEBSITE BUTTON */}
-      {/* 👇 FIX: Mobile par positioning thodi adjust ki hai */}
       <div className="absolute top-6 left-4 md:top-8 md:left-10 z-50">
         <Link href="/" className="group flex items-center gap-2 text-neutral-500 hover:text-rose-600 dark:hover:text-rose-500 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-white dark:bg-white/5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl border border-neutral-200 dark:border-white/10 shadow-sm">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
@@ -52,11 +56,10 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      {/* Background Decor - Fixed for Mobile */}
+      {/* Background Decor */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-rose-500/10 dark:bg-rose-500/5 blur-[80px] md:blur-[120px] rounded-full -z-10" />
 
       {/* LOGIN CARD */}
-      {/* 👇 FIX: Padding p-8 on mobile, p-12 on desktop. Rounded corners adjusted for small screens. */}
       <div className="max-w-md w-full bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl dark:shadow-2xl backdrop-blur-md">
         
         <div className="flex justify-center mb-6 md:mb-8">
@@ -65,7 +68,6 @@ export default function LoginPage() {
             </div>
         </div>
 
-        {/* 👇 FIX: text-3xl on mobile */}
         <h1 className="text-3xl md:text-4xl font-black italic tracking-tighter mb-8 text-center uppercase">
             Login <span className="text-rose-600 dark:text-rose-500">Portal</span>
         </h1>

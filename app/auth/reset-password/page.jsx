@@ -1,13 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -15,9 +10,23 @@ export default function ResetPassword() {
   const [sessionReady, setSessionReady] = useState(false);
   const router = useRouter();
 
+  const supabase = createClientComponentClient();
+
   useEffect(() => {
     const initSession = async () => {
-      // 1. Pehle Hash (#access_token=...&refresh_token=...) parse karo
+      // 1. Check PKCE auth code in URL query params (?code=...)
+      const searchParams = new URLSearchParams(window.location.search);
+      const code = searchParams.get('code');
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          setSessionReady(true);
+          return;
+        }
+      }
+
+      // 2. Check hash fragments (#access_token=...) as fallback
       const hash = window.location.hash;
       if (hash) {
         const params = new URLSearchParams(hash.replace('#', '?'));
@@ -37,7 +46,7 @@ export default function ResetPassword() {
         }
       }
 
-      // 2. Agar session pehle se active hai
+      // 3. Check existing cookie/session from Callback Route
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSessionReady(true);
@@ -46,9 +55,9 @@ export default function ResetPassword() {
 
     initSession();
 
-    // 3. Supabase Auth State Listener
+    // 4. Supabase Auth State Listener
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || session) {
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) {
         setSessionReady(true);
       }
     });
@@ -56,7 +65,7 @@ export default function ResetPassword() {
     return () => {
       authListener?.subscription?.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   const handleReset = async (e) => {
     e.preventDefault();

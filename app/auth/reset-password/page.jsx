@@ -16,17 +16,37 @@ export default function ResetPassword() {
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Email link ke token hash se Session Read/Set karo
-    const handleAuthChange = async () => {
+    const initSession = async () => {
+      // 1. Pehle Hash (#access_token=...&refresh_token=...) parse karo
+      const hash = window.location.hash;
+      if (hash) {
+        const params = new URLSearchParams(hash.replace('#', '?'));
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (!error) {
+            setSessionReady(true);
+            return;
+          }
+        }
+      }
+
+      // 2. Agar session pehle se active hai
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSessionReady(true);
       }
     };
 
-    handleAuthChange();
+    initSession();
 
-    // 2. Auth State Listener for Password Recovery Flow
+    // 3. Supabase Auth State Listener
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY' || session) {
         setSessionReady(true);
@@ -34,7 +54,7 @@ export default function ResetPassword() {
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      authListener?.subscription?.unsubscribe();
     };
   }, []);
 

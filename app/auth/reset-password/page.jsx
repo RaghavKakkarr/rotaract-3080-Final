@@ -1,71 +1,55 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import { createBrowserClient } from '@supabase/ssr';
+import { useRouter } from 'next/navigation';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  // Initialize Browser SSR Client
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 
   useEffect(() => {
-    // Page load hone par URL se tokens read karke session explicitly set karo
-    const initSession = async () => {
-      const accessToken = searchParams.get('access_token');
-      const refreshToken = searchParams.get('refresh_token');
-
-      if (accessToken && refreshToken) {
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setSessionReady(true);
       }
     };
 
-    initSession();
-  }, [searchParams]);
+    checkSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' || session) {
+        setSessionReady(true);
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [supabase]);
 
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      // 🚀 FIX: Submit karne se pehle ensure karo ki token URL se active session me binded hai
-      const accessToken = searchParams.get('access_token');
-      const refreshToken = searchParams.get('refresh_token');
+    const { error } = await supabase.auth.updateUser({ password });
 
-      if (accessToken && refreshToken) {
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-        if (sessionError) {
-          throw new Error("Session expire ho gaya hai. Kripya naya reset link mangwayen.");
-        }
-      }
-
-      // Naya password update karo
-      const { error } = await supabase.auth.updateUser({ password });
-
-      if (error) {
-        alert(`Error: ${error.message}`);
-      } else {
-        alert("✅ Password successfully updated! Ab login kar lo.");
-        router.push('/login');
-      }
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-    } finally {
-      setLoading(false);
+    if (error) {
+      alert(`Error: ${error.message}`);
+    } else {
+      alert("✅ Password successfully updated! Ab login kar lo.");
+      router.push('/login');
     }
+    setLoading(false);
   };
 
   return (
@@ -80,9 +64,9 @@ function ResetPasswordForm() {
       />
       <button
         disabled={loading}
-        className="w-full bg-rose-600 font-black py-4 rounded-2xl uppercase tracking-widest disabled:opacity-50 hover:bg-rose-700 transition text-xs"
+        className="w-full bg-rose-600 font-black py-4 rounded-2xl uppercase tracking-widest disabled:opacity-50 hover:bg-rose-700 transition text-xs flex items-center justify-center gap-2"
       >
-        {loading ? "Updating..." : "Update Password"}
+        {loading ? "Updating Password..." : "Update Password"}
       </button>
     </form>
   );

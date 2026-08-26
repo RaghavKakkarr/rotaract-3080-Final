@@ -1,47 +1,70 @@
 'use client';
 
-import { useState, useEffect, Suspense, useMemo } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionActive, setSessionActive] = useState(false);
-  const [verifying, setVerifying] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
   const router = useRouter();
-
-  const supabase = useMemo(
-    () =>
-      createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      ),
-    []
-  );
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const verifyUserSession = async () => {
+    const initSession = async () => {
+      // 1. Check PKCE code in query params
+      const code = searchParams.get('code');
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          setSessionReady(true);
+          return;
+        }
+      }
+
+      // 2. Check hash fragments (#access_token=...)
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (!error) {
+            setSessionReady(true);
+            return;
+          }
+        }
+      }
+
+      // 3. Fallback check for active session
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setSessionActive(true);
+        setSessionReady(true);
       }
-      setVerifying(false);
     };
 
-    verifyUserSession();
+    initSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || session) {
-        setSessionActive(true);
-        setVerifying(false);
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) {
+        setSessionReady(true);
       }
     });
 
     return () => {
       authListener?.subscription?.unsubscribe();
     };
-  }, [supabase]);
+  }, [searchParams]);
 
   const handleReset = async (e) => {
     e.preventDefault();
@@ -52,31 +75,11 @@ function ResetPasswordForm() {
     if (error) {
       alert(`Error: ${error.message}`);
     } else {
-      alert("✅ Password successfully updated! Ab login kar lo.");
+      alert("✅ Password updated successfully! Ab login kar lo.");
       router.push('/login');
     }
     setLoading(false);
   };
-
-  if (verifying) {
-    return <div className="text-center py-6 text-neutral-400">Verifying session...</div>;
-  }
-
-  if (!sessionActive) {
-    return (
-      <div className="text-center py-6 space-y-4">
-        <p className="text-rose-500 text-sm font-semibold">
-          Auth session expired ya link invalid hai.
-        </p>
-        <button
-          onClick={() => router.push('/login')}
-          className="bg-white/10 text-white text-xs px-5 py-2.5 rounded-xl font-bold uppercase tracking-wider hover:bg-white/20 transition"
-        >
-          Request New Link
-        </button>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleReset} className="space-y-6">
@@ -90,7 +93,7 @@ function ResetPasswordForm() {
       />
       <button
         disabled={loading}
-        className="w-full bg-rose-600 font-black py-4 rounded-2xl uppercase tracking-widest disabled:opacity-50 hover:bg-rose-700 transition text-xs flex items-center justify-center gap-2"
+        className="w-full bg-rose-600 font-black py-4 rounded-2xl uppercase tracking-widest disabled:opacity-50 hover:bg-rose-700 transition text-xs"
       >
         {loading ? "Updating Password..." : "Update Password"}
       </button>

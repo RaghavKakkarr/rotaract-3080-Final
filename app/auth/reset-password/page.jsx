@@ -13,59 +13,79 @@ export default function ResetPassword() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
 
   useEffect(() => {
+    let isMounted = true;
+
     const initSession = async () => {
-      // 1. URL search params (?code=...) check karo
-      const searchParams = new URLSearchParams(window.location.search);
-      const code = searchParams.get('code');
+      try {
+        // 1. Mobile Browsers ke Query Params (?code=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
 
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
-          setSessionReady(true);
-          return;
-        }
-      }
-
-      // 2. Fallback: Hash fragment (#access_token=...) check karo
-      const hash = window.location.hash;
-      if (hash) {
-        const params = new URLSearchParams(hash.replace('#', '?'));
-        const accessToken = params.get('access_token');
-        const refreshToken = params.get('refresh_token');
-
-        if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-
-          if (!error) {
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (!error && isMounted) {
             setSessionReady(true);
             return;
           }
         }
-      }
 
-      // 3. Existing active session check karo
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setSessionReady(true);
+        // 2. Hash Fragments (#access_token=...)
+        const hash = window.location.hash;
+        if (hash) {
+          const params = new URLSearchParams(hash.replace('#', '?'));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+
+          if (accessToken && refreshToken) {
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+
+            if (!error && isMounted) {
+              setSessionReady(true);
+              return;
+            }
+          }
+        }
+
+        // 3. Existing Session Check
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && isMounted) {
+          setSessionReady(true);
+          return;
+        }
+
+        // 4. Mobile delay fallback: Timeout after 6 seconds if token couldn't be parsed
+        setTimeout(async () => {
+          const { data: { session: retrySession } } = await supabase.auth.getSession();
+          if (retrySession && isMounted) {
+            setSessionReady(true);
+          } else if (isMounted && !sessionReady) {
+            setErrorMsg("Security link expire ho gaya hai ya mobile browser mein issue aaya. Kripya Chrome/Safari mein link directly khol kar dekhein.");
+          }
+        }, 6000);
+
+      } catch (err) {
+        if (isMounted) setErrorMsg("Link verify karne mein dikkat aayi.");
       }
     };
 
     initSession();
 
-    // 4. Auth State Change Listener
+    // 5. Auth State Listener
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) && isMounted) {
         setSessionReady(true);
       }
     });
 
     return () => {
+      isMounted = false;
       authListener?.subscription?.unsubscribe();
     };
   }, []);
@@ -93,8 +113,22 @@ export default function ResetPassword() {
         </h1>
 
         {!sessionReady ? (
-          <div className="text-center py-6 text-gray-400 font-medium">
-            Verifying secure link token...
+          <div className="text-center py-6 space-y-4">
+            {errorMsg ? (
+              <div className="space-y-3">
+                <p className="text-sm text-rose-400 font-medium">{errorMsg}</p>
+                <button 
+                  onClick={() => window.location.href = '/login'}
+                  className="text-xs bg-white/10 px-4 py-2 rounded-xl text-white font-bold"
+                >
+                  Back to Login
+                </button>
+              </div>
+            ) : (
+              <div className="text-gray-400 font-medium text-sm">
+                Verifying secure link token...
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleReset} className="space-y-6">

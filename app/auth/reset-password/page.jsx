@@ -66,7 +66,7 @@ export default function ResetPassword() {
           if (retrySession && isMounted) {
             setSessionReady(true);
           } else if (isMounted && !sessionReady) {
-            setErrorMsg("Security link expire ho gaya hai ya mobile browser mein issue aaya. Kripya Chrome/Safari mein link directly khol kar dekhein.");
+            setErrorMsg("The security link may have expired, or there may be an issue with your mobile browser. Please open the link directly in Chrome or Safari and try again.");
           }
         }, 6000);
 
@@ -99,7 +99,7 @@ export default function ResetPassword() {
     if (error) {
       alert(`Error: ${error.message}`);
     } else {
-      alert("Password updated successfully! Ab login kar lo.");
+      alert("Password updated successfully! Please login with your new password.");
       router.push('/login');
     }
     setLoading(false);

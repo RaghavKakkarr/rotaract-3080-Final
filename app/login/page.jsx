@@ -5,7 +5,10 @@ import { createClient } from '@supabase/supabase-js';
 import { Lock, Mail, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -31,10 +34,15 @@ export default function LoginPage() {
       alert("Pehle apni Email ID likho bhai!");
       return;
     }
-    
-    // 🚀 STEP 2 UPDATE: PKCE Auth Callback Route URL
+
+    // Dynamic base URL check (Vercel Production ya Localhost)
+    const baseUrl = typeof window !== 'undefined' && window.location.origin 
+      ? window.location.origin 
+      : 'https://rotaract3080.in';
+
+    // 🚀 DIRECT TARGET REDIRECT: Redirecting straight to reset password route
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/reset-password`,
     });
 
     if (error) {
@@ -47,7 +55,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white flex items-center justify-center px-4 md:px-6 pt-20 md:pt-0 transition-colors duration-300 relative overflow-hidden">
       
-      {/* 🚀 BACK TO WEBSITE BUTTON */}
+      {/* BACK TO WEBSITE BUTTON */}
       <div className="absolute top-6 left-4 md:top-8 md:left-10 z-50">
         <Link href="/" className="group flex items-center gap-2 text-neutral-500 hover:text-rose-600 dark:hover:text-rose-500 transition-colors text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-white dark:bg-white/5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl border border-neutral-200 dark:border-white/10 shadow-sm">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
@@ -63,20 +71,20 @@ export default function LoginPage() {
       <div className="max-w-md w-full bg-white dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl dark:shadow-2xl backdrop-blur-md">
         
         <div className="flex justify-center mb-6 md:mb-8">
-            <div className="w-14 h-14 md:w-16 md:h-16 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-600 dark:text-rose-500 border border-rose-100 dark:border-rose-500/20">
-                <ShieldCheck size={28} md={32} />
-            </div>
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-600 dark:text-rose-500 border border-rose-100 dark:border-rose-500/20">
+            <ShieldCheck size={28} />
+          </div>
         </div>
 
         <h1 className="text-3xl md:text-4xl font-black italic tracking-tighter mb-8 text-center uppercase">
-            Login <span className="text-rose-600 dark:text-rose-500">Portal</span>
+          Login <span className="text-rose-600 dark:text-rose-500">Portal</span>
         </h1>
         
         <form onSubmit={handleLogin} className="space-y-5 md:space-y-6">
           <div className="space-y-2">
             <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Official Email</label>
             <div className="relative">
-              <Mail className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 text-neutral-400" size={16} md={18} />
+              <Mail className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
               <input
                 required
                 type="email"
@@ -90,7 +98,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <label className="text-[9px] md:text-[10px] font-black uppercase text-neutral-500 ml-2 tracking-widest">Security Key</label>
             <div className="relative">
-              <Lock className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 text-neutral-400" size={16} md={18} />
+              <Lock className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
               <input
                 required
                 type="password"
@@ -120,7 +128,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-8 text-center text-neutral-400 text-[8px] md:text-[9px] font-bold uppercase tracking-widest">
-            Authorized Personnel Only • RID 3080
+          Authorized Personnel Only • RID 3080
         </p>
       </div>
     </main>

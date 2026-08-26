@@ -1,34 +1,40 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
+  const [sessionActive, setSessionActive] = useState(false);
+  const [verifying, setVerifying] = useState(true);
   const router = useRouter();
 
-  // Initialize Browser SSR Client
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabase = useMemo(
+    () =>
+      createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      ),
+    []
   );
 
   useEffect(() => {
-    const checkSession = async () => {
+    const verifyUserSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setSessionReady(true);
+        setSessionActive(true);
       }
+      setVerifying(false);
     };
 
-    checkSession();
+    verifyUserSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY' || session) {
-        setSessionReady(true);
+        setSessionActive(true);
+        setVerifying(false);
       }
     });
 
@@ -51,6 +57,26 @@ function ResetPasswordForm() {
     }
     setLoading(false);
   };
+
+  if (verifying) {
+    return <div className="text-center py-6 text-neutral-400">Verifying session...</div>;
+  }
+
+  if (!sessionActive) {
+    return (
+      <div className="text-center py-6 space-y-4">
+        <p className="text-rose-500 text-sm font-semibold">
+          Auth session expired ya link invalid hai.
+        </p>
+        <button
+          onClick={() => router.push('/login')}
+          className="bg-white/10 text-white text-xs px-5 py-2.5 rounded-xl font-bold uppercase tracking-wider hover:bg-white/20 transition"
+        >
+          Request New Link
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleReset} className="space-y-6">

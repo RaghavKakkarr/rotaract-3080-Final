@@ -19,10 +19,15 @@ export async function GET(request) {
           setAll(cookiesToSet) {
             try {
               cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
+                cookieStore.set(name, value, {
+                  ...options,
+                  path: '/',
+                  sameSite: 'lax',
+                  secure: process.env.NODE_ENV === 'production',
+                })
               );
             } catch {
-              // Server Component context
+              // Handle server component edge case
             }
           },
         },
@@ -32,9 +37,11 @@ export async function GET(request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Direct redirect to reset-password page after successful session exchange
       return NextResponse.redirect(`${requestUrl.origin}/auth/reset-password`);
     }
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}/auth/reset-password?error=session_failed`);
+  // Session fail hone par login par bhejo with error query
+  return NextResponse.redirect(`${requestUrl.origin}/login?error=session_expired`);
 }

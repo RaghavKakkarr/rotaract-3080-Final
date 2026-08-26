@@ -12,13 +12,12 @@ const supabase = createClient(
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const syncSession = async () => {
-      // Check query params passed by callback
+    // Page load hone par URL se tokens read karke session explicitly set karo
+    const initSession = async () => {
       const accessToken = searchParams.get('access_token');
       const refreshToken = searchParams.get('refresh_token');
 
@@ -27,40 +26,46 @@ function ResetPasswordForm() {
           access_token: accessToken,
           refresh_token: refreshToken,
         });
-        setReady(true);
-        return;
-      }
-
-      // Check current session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setReady(true);
-      } else {
-        // Fallback check after delay for slow mobile WebViews
-        setTimeout(async () => {
-          const { data: { session: retrySession } } = await supabase.auth.getSession();
-          if (retrySession) setReady(true);
-          else setReady(true); // Allow form render anyway to prevent eternal loop
-        }, 1000);
       }
     };
 
-    syncSession();
+    initSession();
   }, [searchParams]);
 
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.updateUser({ password });
+    try {
+      // 🚀 FIX: Submit karne se pehle ensure karo ki token URL se active session me binded hai
+      const accessToken = searchParams.get('access_token');
+      const refreshToken = searchParams.get('refresh_token');
 
-    if (error) {
-      alert(`Error: ${error.message}`);
-    } else {
-      alert("Password updated successfully! Ab login kar lo.");
-      router.push('/login');
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (sessionError) {
+          throw new Error("Session expire ho gaya hai. Kripya naya reset link mangwayen.");
+        }
+      }
+
+      // Naya password update karo
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("✅ Password successfully updated! Ab login kar lo.");
+        router.push('/login');
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

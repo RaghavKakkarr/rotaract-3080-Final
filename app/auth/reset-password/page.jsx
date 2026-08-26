@@ -12,73 +12,83 @@ const supabase = createClient(
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
+  const [statusMsg, setStatusMsg] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Automatic token detection on load
   useEffect(() => {
-    const initSession = async () => {
-      // 1. Check PKCE code in query params
-      const code = searchParams.get('code');
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
-          setSessionReady(true);
-          return;
+    const establishSession = async () => {
+      try {
+        // 1. Check PKCE code in query (?code=...)
+        const code = searchParams.get('code');
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (!error) return;
         }
-      }
 
-      // 2. Check hash fragments (#access_token=...)
-      if (typeof window !== 'undefined' && window.location.hash) {
-        const params = new URLSearchParams(window.location.hash.replace('#', '?'));
-        const accessToken = params.get('access_token');
-        const refreshToken = params.get('refresh_token');
+        // 2. Check Hash Fragment (#access_token=...)
+        if (typeof window !== 'undefined' && window.location.hash) {
+          const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
 
-        if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-          if (!error) {
-            setSessionReady(true);
-            return;
+          if (accessToken && refreshToken) {
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
           }
         }
-      }
-
-      // 3. Fallback check for active session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setSessionReady(true);
+      } catch (err) {
+        console.error("Session init issue:", err);
       }
     };
 
-    initSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) {
-        setSessionReady(true);
-      }
-    });
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
+    establishSession();
   }, [searchParams]);
 
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatusMsg('');
 
-    const { error } = await supabase.auth.updateUser({ password });
+    try {
+      // 🚀 CRITICAL FIX: Direct session verification right before update
+      const code = searchParams.get('code');
+      if (code) {
+        await supabase.auth.exchangeCodeForSession(code);
+      } else if (typeof window !== 'undefined' && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
 
-    if (error) {
-      alert(`Error: ${error.message}`);
-    } else {
-      alert("✅ Password updated successfully! Ab login kar lo.");
-      router.push('/login');
+        if (accessToken && refreshToken) {
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+        }
+      }
+
+      // Password update call
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        if (error.message.includes('session') || error.message.includes('Auth session missing')) {
+          alert("Link expire ho chuka hai! Kripya Login page par 'Forgot Password' daba kar Naya Link mangwayen.");
+        } else {
+          alert(`Error: ${error.message}`);
+        }
+      } else {
+        alert("✅ Password successfully update ho gaya hai! Ab login kar lo.");
+        router.push('/login');
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

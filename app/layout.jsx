@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar'; // (Path check kar lena agar Navbar folder alag hai)
 import Footer from '@/components/Footer'; 
 import { ThemeProvider } from './ThemeProvider'; // 👈 Step 1: Ye import kiya
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata = {
   title: 'Rotaract District 3080',
@@ -33,7 +34,7 @@ export default function RootLayout({ children }) {
           <Footer />
 
         </ThemeProvider>
-        
+        <SpeedInsights />
       </body>
     </html>
   );
